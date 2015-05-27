@@ -1,8 +1,299 @@
-body {
-  padding: 50px;
-  font: 14px "Lucida Grande", Helvetica, Arial, sans-serif;
+* {
+	padding: 0;
+	margin: 0;
 }
 
-a {
-  color: #00B7FF;
+body, .purple {
+	background: @light-purple;
 }
+
+.container, .container-fluid, .row {
+	padding: 0;
+	margin: 0;
+}
+
+#footer {
+	position: fixed;
+	width: 100%;
+	height: 30px;
+	background: #fff;
+	bottom: 0;
+	text-align: center;
+	p {
+		font-size: 15px;
+		margin-top: 7px;
+	}
+}
+
+@after-header: 150px;
+@dark-purple: #453997;
+@light-purple: #7554FF;
+@orange: #FF6621;
+
+// ================ FONTS / HEADINGS =================================
+
+a {
+	color: #00B7FF;
+}
+
+.link {
+	transition: color 200ms ease-in-out;
+	&:hover {
+		color: @orange;
+	}
+}
+
+h1 {
+	font: 400 80px/1.5em "Abril Fatface", Verdana, serif;
+	color: @light-purple;
+	text-shadow: 0 0 1px rgba(0,0,0,0.4);
+}
+
+h2 {
+	font: 400 27px/1em "Limelight", Helvetica, sans-serif;
+	text-shadow: 0 0 1px rgba(0,0,0,0.4);
+	color: @orange;
+}
+
+p {
+	font: 400 20px/1em "Poiret One", Arial, sans-serif;
+	color: @orange;
+}
+
+// ========================== HEADER =================================
+
+header {
+	position: fixed;
+	top: 0;
+	width: 100%;
+	height: @after-header;
+	background: #fff;
+	box-shadow: 0 2px 3px rgba(0,0,0,0.1);
+	z-index: 1;
+	nav {
+		position: fixed;
+		width: 60%;
+		right: 0;
+		top: 20px;
+		h1 {
+			position: relative;
+			width: 140px;
+			text-align: right;
+			left: ~"calc(100% - 140px - 15%)";
+			font-size: 20px;
+			cursor: pointer;
+		}
+	}
+
+}
+
+#title {
+	position: relative;
+	margin-top: 15px;
+	margin-left: 8%;
+	width: 400px;
+	letter-spacing: 10px;
+	text-align: center;
+	text-shadow: 0 0 2px rgba(0,0,0,0.4);
+	cursor: pointer;
+}
+
+// ========================== ASIDE / NAV =============================
+
+aside {
+	z-index: 0;
+	position: fixed;
+	top: @after-header;
+	height: ~"calc(100vh - "@after-header~" - 30px)";
+	background: @light-purple;;
+	box-shadow: -2px 0 3px rgba(0,0,0,0.1);
+	padding: 0;
+	overflow-y: scroll;
+	// &:hover {
+	// 	background: #fff;
+	// 	z-index: 1;
+	// 	box-shadow: none;
+	// }
+}
+
+#user-title {
+	position: relative;
+	width: 100%;
+	text-align: center;
+	top: 0;
+}
+
+#users {
+	position: relative;
+	width: 100%;
+	height: 85%;
+	top: 0;
+	overflow-x: scroll;
+}
+
+.user h1 {
+	font-size: 20px;
+	line-height: 1.5em;
+	margin: 0;
+	color: #fff;
+	cursor: pointer;
+	overflow-y: scroll;
+	transition: color 500ms ease-in-out;
+	&:hover {
+		color: @dark-purple;
+	}
+}
+
+// ========================== FRONT PAGE MAP & RECENT =============================
+
+#map-all {
+	position: absolute;
+	top: @after-header;
+	height: ~"calc(100vh - "@after-header~" - 30px)";
+	.inner-container {
+		border-radius: 10px 0 0 10px;
+	}
+}
+
+#recent-pics {
+	position: absolute;
+	top: @after-header;
+	height: ~"calc(100vh - "@after-header~" - 30px)";
+	.inner-container {
+		border-radius: 0 10px 10px 0;
+	}
+}
+
+.inner-container {
+	background: #fff;
+	position: relative;
+	top: 2.5%;
+	left: -1.25%;
+	width: 102.5%;
+	height: 95%;
+	box-shadow: 0 0 15px rgba(0,0,0,0.4);
+	overflow-y: scroll;
+	h2 {
+		text-align: center;
+		z-index: 1;
+	}
+	.pic {
+		display: inline-block;
+		position: relative;
+		cursor: pointer;
+		width: (100% / 3);
+		background: @dark-purple;
+		vertical-align: top;
+		transition: opacity 500ms ease-in-out;
+	}
+}
+
+
+// ========================== LOGIN & CREATE PROFILE PAGES =============================
+
+.center-container {
+	position: absolute;
+	top: @after-header;
+	left: 15%;
+	width: 70%;
+	box-shadow: 0 5px 5px rgba(0,0,0,0.2);
+	border-radius: 0 0 10px 10px;
+	height: 550px;
+	background: #fff;
+}
+
+.create-prof {
+	.center-container {
+		height: 900px;
+		margin-bottom: 80px;
+	}
+	label {
+		font-size: 20px;
+	}
+	input, textarea, .form-control {
+		font: 400 18px/1em "Abril Fatface", Helvetica, serif;
+		letter-spacing: 1px;
+	}
+}
+
+#login-form {
+	position: relative;
+	top: 30%;
+	width: 75%;
+	left: 25% / 2;
+}
+
+#create-prof-form {
+	position: relative;
+	top: 5%;
+	width: 80%;
+	left: 10%;
+}
+
+label, input, button, .form-control {
+	font: 400 35px/1em "Limelight", Helvetica, sans-serif;
+	text-shadow: 0 0 1px rgba(0,0,0,0.4);
+	color: @dark-purple;
+}
+
+input, .form-control {
+	text-align: center;
+	height: 100%;
+	background: @light-purple;
+	border: 0;
+	color: #fff;
+	font-size: 30px;
+	border-radius: 5px;
+	box-shadow: 0 0 5px rgba(0,0,0,0.4);
+	&:focus {
+		outline: 0;
+		background: @orange;
+	}
+}
+
+.form-control#prof-pic {
+	width: 50%;
+}
+
+.form-control#first-name, .form-control#last-name {
+	width: auto;
+	margin-left: 10px;
+	margin-bottom: 18px;
+}
+
+button {
+	background: @orange;
+	font-size: 30px;
+	color: #fff;
+	padding: 15px;
+	border: 0;
+	border-radius: 5px;
+	margin-top: 20px;
+	box-shadow: 0 0 5px rgba(0,0,0,0.4);
+	transition: background 300ms ease-in-out;
+	&:hover {
+		background: @dark-purple;
+	}
+	&:focus {
+		outline: 0;
+	}
+}
+
+#pass-mismatch {
+	font-size: 15px;
+	text-align: center;
+	margin-top: -5px;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+

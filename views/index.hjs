@@ -2,10 +2,90 @@
 <html>
   <head>
     <title>{{ title }}</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <link rel='stylesheet' href='https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap.min.css' />
+    <link href='http://fonts.googleapis.com/css?family=Poiret+One|Limelight|Abril+Fatface' rel='stylesheet' type='text/css'>
     <link rel='stylesheet' href='/stylesheets/style.css' />
   </head>
   <body>
-    <h1>{{ title }}</h1>
-    <p>Welcome to {{ title }}</p>
+    <header>
+      <h1 id="title">{{ title }}</h1>
+      <nav>
+        <h1 class="link" id="login">Login</h1>
+        <h1 class="link" id="create-prof">Create Profile</h1>
+      </nav>
+    </header>
+    <!-- HOME PAGE -->
+    <div class="container-fluid home page">
+      <div class="row">
+        <aside class="col-xs-12 col-sm-1 col-md-1 col-lg-1 pull-right">
+          <h2 id="user-title">USERS</h2>
+          <nav id="users">
+            <div class="user"><h1>{{ user }}</h1></div><div class="user"><h1>abslsyubxuays</h1></div><div class="user"><h1>hhhhh</h1></div>
+          </nav>
+        </aside>
+        <div class="container-fluid">
+          <div id="map-all" class="purple col-xs-12 col-sm-12 col-md-5 col-md-offset-1 col-lg-5 col-lg-offset-1">
+            <div class="inner-container">
+              
+            </div>
+          </div>
+          <div id="recent-pics" class="purple col-xs-12 col-sm-12 col-md-5 col-md-offset-6 col-lg-5 col-lg-offset-6">
+            <div class="inner-container">
+              <span><h2>RECENT</h2></span>
+              <img src="{{ image }}" class="pic"><img src="{{ image }}" class="pic"><img src="{{ image }}" class="pic">
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- LOGIN PAGE -->
+    <div class="container-fluid login page">
+      <div class="row">
+        <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 center-container">
+          <form id="login-form">
+            <div class="form-group">
+              <label for="username">Username:</label><input class="form-control" id="username" name="username" type="text" autocomplete required><br>
+              <label for="password">Password:</label><input class="form-control" id="password" name="password" type="password" autocomplete required><br>
+              <button type="submit">Submit</button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div> 
+    <!-- CREATE PROFILE PAGE -->
+    <div class="container-fluid create-prof page">
+      <div class="row">
+        <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 center-container">
+          <form id="create-prof-form">
+            <div class="form-group">
+              <label for="username">Username:</label><input class="form-control" id="new-username" name="username" type="text" placeholder="Enter Username" autocomplete required><br>
+              <label for="password">Password:</label><input class="form-control" id="new-password" name="password" type="password" placeholder="Enter New Password" autocomplete required><br>
+              <h2 id="pass-mismatch">Passwords do not match, please try again!</h2>
+              <label for="re-password">Password, Again:</label><input class="form-control" id="re-password" name="re-password" type="password" placeholder="Re-enter Password" autocomplete required><br>
+              <div class="form-inline">
+                <div class="form-group">
+                  <label for="first-name">First Name:</label><input class="form-control" id="first-name" name="first-name" type="text" autocomplete required>
+                  <label for="last-name">Last Name:</label><input class="form-control" id="last-name" name="last-name" type="text" autocomplete required>
+                </div>
+              </div>
+              <label for="email">Email:</label><input class="form-control" id="email" name="email" type="email" placeholder="e.g. hello_there@gmail.com" autocomplete required><br>
+              <label for="prof-pic">Profile Picture:</label><input name="prof-pic" id="prof-pic" class="form-control" type="file" accept="image/*"><br>
+              <label for="bio">Bio:</label><textarea class="form-control" id="bio" name="bio" rows="4" placeholder="Tell us a little about yourself..."></textarea><br>
+              <button type="submit">Submit</button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div> 
+    
+
+    <div id="footer">      
+      <p><small>Copyright &#169; 2015 Picllery. All rights reserved.</small></p>
+    </div>
+    <script src="http://code.jquery.com/jquery-2.1.4.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/js/bootstrap.min.js"></script>
+    <script src="/javascripts/main.js"></script>
   </body>
 </html>
