@@ -2,6 +2,15 @@ $(function() {
 
 "use strict";
 
+var usernames,
+recent,
+username,
+first_name,
+last_name,
+email,
+prof_pic,
+bio;
+
 var pic_wid = $(".pic").width();
 $(".pic").css({"height": pic_wid + "px"});
 
@@ -23,47 +32,64 @@ function hideAllPgs() {
 
 function renderHomePg() {
 	hideAllPgs();
-	$(".home").show();
+  $(".home").show();
+  $.ajax({
+    url: "/api/home",
+    type: "GET",
+  }).done(function(data){
+    usernames = data.usernames;
+    recent = data.recent;
+    console.log(data.usernames[0].username);
+  }).fail(function(a, b, c) {
+    console.log("Failed to retrieve data :(");
+    console.log(a, b, c);
+  });
 }
 
 function renderCreateProfile() {
 	hideAllPgs();
 	$(".create-prof").show();
-	$("#pass-mismatch").hide();
+	$("#pass-mismatch, #username-taken").hide();
 	createProfile();
 }
 
 function createProfile() {
 	$("#create-prof-form").on("submit", function() {
 		event.preventDefault();
-		console.log("submitted");
+		console.log("create profile form submitted");
 		var password1 = $("#new-password").val();
 		var password2 = $("#re-password").val();
-		if (password1 == password2) {
+		if (password1 === password2) {
 			$("#pass-mismatch").hide();
 			$.ajax({
-	            url: "/api/register",
-	            type: "POST",
-	            data: $("#create-prof-form").serialize()
-	        }).done(function(data){
-	            if (data.username_taken) {
-	                // $("h1#error").show();
-	            }
-	            else {
-	                // $("h1#error").hide();
-	                // renderViewProfile(data.username);
-	                // updateNavLoginStatus(data);
-	                // console.log("Posted and created new profile for: " + data.username);
-	            }
-	        }).fail(function(a, b, c) {
-	            console.log("Failed to post/register... :(");
-	            console.log(a, b, c);
-	        });
-    	}
-    	else {
-    		$("#pass-mismatch").show();
-    		console.log("failed");
-    	}
+        url: "/api/register",
+        type: "POST",
+        data: $("#create-prof-form").serialize()
+      }).done(function(data){
+        if (data.username_taken) {
+            $("#username-taken").show();
+        }
+        else {
+            $("#username-taken").hide();
+            hideAllPgs();
+            $(".profile").show();
+            username = data.username;
+            first_name = data.first_name;
+            last_name = data.last_name;
+            email = data.email;
+            prof_pic = data.prof_pic;
+            bio = data.bio;
+            console.log("Registered and created new profile for: " + data.username);
+        }
+      }).fail(function(a, b, c) {
+        console.log("Failed to post/register... :(");
+        console.log(a, b, c);
+      });
+  	}
+  	else {
+  		$("#pass-mismatch").show();
+  		console.log("Failed to register; passwords do not match.");
+  	}
 	});
 }
 
@@ -74,11 +100,13 @@ function renderLoginPg() {
 
 function renderViewProfile() {
 	hideAllPgs();
+  $(".profile").show();
 }
 
 function uploadNewPic() {
 	hideAllPgs();
 }
+//============================
 
 //============================
 renderHomePg();

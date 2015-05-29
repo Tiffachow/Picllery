@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html>
+<html ng-app="piclleryApp">
   <head>
     <title>Picllery</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
@@ -8,7 +8,7 @@
     <link href='http://fonts.googleapis.com/css?family=Poiret+One|Limelight|Abril+Fatface' rel='stylesheet' type='text/css'>
     <link rel='stylesheet' href='/stylesheets/style.css' />
   </head>
-  <body>
+  <body ng-controller="mainController">
     <header>
       <h1 id="title">Picllery</h1>
       <nav>
@@ -16,13 +16,14 @@
         <h1 class="link" id="create-prof">Create Profile</h1>
       </nav>
     </header>
+
     <!-- HOME PAGE -->
     <div class="container-fluid home page">
       <div class="row">
         <aside class="col-xs-12 col-sm-1 col-md-1 col-lg-1 pull-right">
           <h2 id="user-title">USERS</h2>
           <nav id="users">
-            <div class="user"><h1>{{ username }}</h1></div><div class="user"><h1>abslsyubxuays</h1></div><div class="user"><h1>hhhhh</h1></div>
+            <div class="user" ng-repeat="user in users.usernames"><h1>{{ user.username }}</h1></div>
           </nav>
         </aside>
         <div class="container-fluid">
@@ -34,12 +35,13 @@
           <div id="recent-pics" class="purple col-xs-12 col-sm-12 col-md-5 col-md-offset-6 col-lg-5 col-lg-offset-6">
             <div class="inner-container">
               <span><h2>RECENT</h2></span>
-              <img src="{{ picture }}" class="pic"><img src="{{ picture }}" class="pic"><img src="{{ picture }}" class="pic">
+              <img ng-repeat="pic in users.recent" src="{{ pic.picture }}" class="pic">
             </div>
           </div>
         </div>
       </div>
     </div>
+
     <!-- LOGIN PAGE -->
     <div class="container-fluid login page">
       <div class="row">
@@ -54,14 +56,16 @@
         </div>
       </div>
     </div> 
+
     <!-- CREATE PROFILE PAGE -->
     <div class="container-fluid create-prof page">
       <div class="row">
         <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 center-container">
           <form id="create-prof-form">
             <div class="form-group">
+              <h2 id="username-taken">Username is taken, please try again!</h2>
               <label for="username">Username:</label><input class="form-control" id="new-username" name="username" type="text" placeholder="Enter Username" autocomplete required><br>
-              <label for="password">Password:</label><input class="form-control" id="new-password" name="password" type="password" placeholder="Enter New Password" autocomplete required><br>
+              <label for="password">Password:</label><input class="form-control" id="password" name="password" type="password" placeholder="Enter New Password" autocomplete required><br>
               <h2 id="pass-mismatch">Passwords do not match, please try again!</h2>
               <label for="re-password">Password, Again:</label><input class="form-control" id="re-password" name="re-password" type="password" placeholder="Re-enter Password" autocomplete required><br>
               <div class="form-inline">
@@ -79,13 +83,82 @@
         </div>
       </div>
     </div> 
+
+    <!-- PROFILE PAGE -->
+    <div class="container-fluid profile page">
+      <div class="row">
+        <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 center-container">
+          
+        </div>
+      </div>
+    </div> 
+    
     
 
     <div id="footer">      
       <p><small>Copyright &#169; 2015 Picllery. All rights reserved.</small></p>
     </div>
-    <script src="http://code.jquery.com/jquery-2.1.4.min.js"></script>
+    <script src="https://code.jquery.com/jquery-2.1.4.min.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/js/bootstrap.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.3.15/angular.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.2.25/angular-route.min.js"></script>
     <script src="/javascripts/main.js"></script>
+    <script>
+      var piclleryApp = angular.module("piclleryApp", []);
+      function mainController($scope, $http) {
+        // when landing on the page, get all usernames and show them
+        $http.get('/api/home')
+          .success(function(data) {
+            $scope.users = {
+              usernames: usernames,
+              recent: recent
+            };
+          })
+          .error(function(data) {
+            console.log('Error: ' + data);
+          });
+
+        $http.get('/api/profile')
+          .success(function(data) {
+            $scope.profile = {
+              username: username,
+              first_name: first_name,
+              last_name: last_name,
+              email: email,
+              prof_pic: prof_pic,
+              bio: bio
+            };
+          })
+          .error(function(data) {
+            console.log('Error: ' + data);
+          });
+
+        $http.get('/api/pictures')
+          .success(function(data) {
+            $scope.pictures = {
+              picture: picture,
+              location: location,
+              likes: likes,
+              priv: priv
+            };
+          })
+          .error(function(data) {
+            console.log('Error: ' + data);
+          });
+
+        $http.get('/api/picture')
+          .success(function(data) {
+            $scope.pictures = {
+              picture: picture,
+              location: location,
+              likes: likes,
+              priv: priv
+            };
+          })
+          .error(function(data) {
+            console.log('Error: ' + data);
+          });
+      }
+    </script>
   </body>
 </html>
