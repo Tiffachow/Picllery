@@ -13,14 +13,14 @@ Install, setup postgreSQL if you haven't already:
     $ initdb /usr/local/var/postgres -E utf8
     $ ln -sfv /usr/local/opt/postgresql/*.plist ~/Library/LaunchAgents
 ```
-Create database named "picllery":
-`$ createdb picllery`
-Clone the repo:
-`$ git clone git@github.com:Tiffachow/Picllery.git`
-Install the app and setup tables:
-`$ npm install`
-Start the server:
-`$ npm start`
+Create database named "picllery":  
+`$ createdb picllery`  
+Clone the repo:  
+`$ git clone git@github.com:Tiffachow/Picllery.git`  
+Install the app and setup tables:  
+`$ npm install`  
+Start the server:  
+`$ npm start`  
 View in your browser at `http://localhost:3000`
 
 ##Tech
