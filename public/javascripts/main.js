@@ -23,6 +23,28 @@ $(".pic").hover(
 	}
 );
 
+$(".mobile > ul > li").click(alternateOpen);
+function alternateOpen() {
+  $(".mobile").css("transform","translateX(0)");
+  $(this).click(function(){
+    $(".mobile").css("transform","translateX(-120px)")
+    $(this).click(alternateOpen);
+  });
+}
+
+$("#recent-link").click(function(){
+  $(".section").css("z-index","0");
+  $("#recent-pics").css("z-index","1");
+});
+$("#map-link").click(function(){
+  $(".section").css("z-index","0");
+  $("#map-all").css("z-index","1");
+});
+$("#users-link").click(function(){
+  $(".section").css("z-index","0");
+  $("aside").css("z-index","1");
+});
+
 //============================
 function hideAllPgs() {
 	$(".page").hide();
@@ -33,17 +55,6 @@ function hideAllPgs() {
 function renderHomePg() {
 	hideAllPgs();
   $(".home").show();
-  $.ajax({
-    url: "/api/home",
-    type: "GET",
-  }).done(function(data){
-    usernames = data.usernames;
-    recent = data.recent;
-    console.log(data.usernames[0].username);
-  }).fail(function(a, b, c) {
-    console.log("Failed to retrieve data :(");
-    console.log(a, b, c);
-  });
 }
 
 function renderCreateProfile() {
@@ -98,11 +109,6 @@ function renderLoginPg() {
 	$(".login").show();
 }
 
-function renderViewProfile() {
-	hideAllPgs();
-  $(".profile").show();
-}
-
 function uploadNewPic() {
 	hideAllPgs();
 }
@@ -110,7 +116,6 @@ function uploadNewPic() {
 
 //============================
 renderHomePg();
-$(".user").click(renderViewProfile);
 $("#title").click(renderHomePg);
 $("#login").click(renderLoginPg);
 $("#create-prof").click(renderCreateProfile);

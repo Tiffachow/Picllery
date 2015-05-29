@@ -154,7 +154,7 @@ router.post('/api/login', function(req, res) {
 // ================================================================================
 
 /* GET profile. */
-router.get('/api/profile', function(req, res) {
+router.get('/api/profile/<username>', function(req, res) {
   var username = req.params["username"];
   // Get a Postgres client from the connection pool
   pg.connect(conString, function(err, client, done) {

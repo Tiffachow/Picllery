@@ -8,7 +8,7 @@
     <link href='http://fonts.googleapis.com/css?family=Poiret+One|Limelight|Abril+Fatface' rel='stylesheet' type='text/css'>
     <link rel='stylesheet' href='/stylesheets/style.css' />
   </head>
-  <body ng-controller="mainController">
+  <body>
     <header>
       <h1 id="title">Picllery</h1>
       <nav>
@@ -18,21 +18,21 @@
     </header>
 
     <!-- HOME PAGE -->
-    <div class="container-fluid home page">
+    <div class="container-fluid home page" ng-controller="homeController">
       <div class="row">
-        <aside class="col-xs-12 col-sm-1 col-md-1 col-lg-1 pull-right">
+        <aside class="section col-xs-12 col-sm-12 col-md-1 col-lg-1 pull-right">
           <h2 id="user-title">USERS</h2>
-          <nav id="users">
-            <div class="user" ng-repeat="user in users.usernames"><h1>{{ user.username }}</h1></div>
+          <nav class="users">
+            <h1 class="user" ng-repeat="user in users.usernames" ng-click="viewProfile()">{{ user.username }}</h1>
           </nav>
         </aside>
         <div class="container-fluid">
-          <div id="map-all" class="purple col-xs-12 col-sm-12 col-md-5 col-md-offset-1 col-lg-5 col-lg-offset-1">
+          <div id="map-all" class="section purple col-xs-12 col-sm-12 col-md-5 col-md-offset-1 col-lg-5 col-lg-offset-1">
             <div class="inner-container">
               
             </div>
           </div>
-          <div id="recent-pics" class="purple col-xs-12 col-sm-12 col-md-5 col-md-offset-6 col-lg-5 col-lg-offset-6">
+          <div id="recent-pics" class="section purple col-xs-12 col-sm-12 col-md-5 col-md-offset-6 col-lg-5 col-lg-offset-6">
             <div class="inner-container">
               <span><h2>RECENT</h2></span>
               <img ng-repeat="pic in users.recent" src="{{ pic.picture }}" class="pic">
@@ -40,6 +40,16 @@
           </div>
         </div>
       </div>
+      <nav class="mobile">
+        <ul>
+          <ul id="mobile-nav">
+            <li id="recent-link">Recent</li>
+            <li id="map-link">Map</li>
+            <li id="users-link">Users</li>
+          </ul>
+          <li>NAV</li>
+        </ul>
+      </nav>
     </div>
 
     <!-- LOGIN PAGE -->
@@ -85,7 +95,7 @@
     </div> 
 
     <!-- PROFILE PAGE -->
-    <div class="container-fluid profile page">
+    <div class="container-fluid profile page" ng-controller="profileController">
       <div class="row">
         <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 center-container">
           
@@ -104,35 +114,48 @@
     <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.2.25/angular-route.min.js"></script>
     <script src="/javascripts/main.js"></script>
     <script>
+      var username;
       var piclleryApp = angular.module("piclleryApp", []);
-      function mainController($scope, $http) {
+      // piclleryApp.factory('username', function(){
+      //   return username = null;
+      // });
+      piclleryApp.controller("homeController", ['$scope', '$http', function($scope, $http) {
         // when landing on the page, get all usernames and show them
         $http.get('/api/home')
           .success(function(data) {
             $scope.users = {
-              usernames: usernames,
-              recent: recent
+              usernames: data.usernames,
+              recent: data.recent
             };
+            console.log(data);
           })
           .error(function(data) {
             console.log('Error: ' + data);
-          });
-
-        $http.get('/api/profile')
+          });   
+        $scope.viewProfile = function() {
+          $(".page").hide();
+          $(".profile").show();
+          username = $(".user").html();
+          console.log($(".user").html());
+        };  
+      }]);
+      piclleryApp.controller("profileController", ['$scope', '$http', function($scope, $http) {
+        $http.get('/api/profile/' + username)
           .success(function(data) {
             $scope.profile = {
-              username: username,
-              first_name: first_name,
-              last_name: last_name,
-              email: email,
-              prof_pic: prof_pic,
-              bio: bio
+              username: data.username,
+              first_name: data.first_name,
+              last_name: data.last_name,
+              email: data.email,
+              prof_pic: data.prof_pic,
+              bio: data.bio
             };
           })
           .error(function(data) {
             console.log('Error: ' + data);
           });
-
+      }]);
+      piclleryApp.controller("picturesController", ['$scope', '$http', function($scope, $http) {
         $http.get('/api/pictures')
           .success(function(data) {
             $scope.pictures = {
@@ -145,7 +168,8 @@
           .error(function(data) {
             console.log('Error: ' + data);
           });
-
+      }]);
+      piclleryApp.controller("pictureController", ['$scope', '$http', function($scope, $http) {
         $http.get('/api/picture')
           .success(function(data) {
             $scope.pictures = {
@@ -158,7 +182,7 @@
           .error(function(data) {
             console.log('Error: ' + data);
           });
-      }
+      }]);
     </script>
   </body>
 </html>

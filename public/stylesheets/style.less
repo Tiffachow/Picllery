@@ -29,7 +29,6 @@ body, .purple {
 @dark-purple: #453997;
 @light-purple: #7554FF;
 @orange: #FF6621;
-
 // ================ FONTS / HEADINGS =================================
 
 a {
@@ -72,14 +71,14 @@ header {
 	z-index: 1;
 	nav {
 		position: fixed;
-		width: 60%;
+		width: 30%;
 		right: 0;
 		top: 20px;
 		h1 {
 			position: relative;
 			width: 140px;
 			text-align: right;
-			left: ~"calc(100% - 140px - 15%)";
+			left: ~"calc(100% - 140px - 30%)";
 			font-size: 20px;
 			cursor: pointer;
 		}
@@ -109,11 +108,7 @@ aside {
 	box-shadow: -2px 0 3px rgba(0,0,0,0.1);
 	padding: 0;
 	overflow-y: scroll;
-	// &:hover {
-	// 	background: #fff;
-	// 	z-index: 1;
-	// 	box-shadow: none;
-	// }
+	overflow-x: hidden;
 }
 
 #user-title {
@@ -123,16 +118,17 @@ aside {
 	top: 0;
 }
 
-#users {
+.users {
 	position: relative;
 	width: 100%;
 	height: 85%;
 	top: 0;
-	overflow-x: scroll;
+	overflow-x: hidden;
 }
 
-.user h1 {
-	font-size: 20px;
+.user {
+	text-align: center;
+	font-size: 18px;
 	line-height: 1.5em;
 	margin: 0;
 	color: #fff;
@@ -152,6 +148,7 @@ aside {
 	height: ~"calc(100vh - "@after-header~" - 30px)";
 	.inner-container {
 		border-radius: 10px 0 0 10px;
+		left: -2.75%;
 	}
 }
 
@@ -161,6 +158,7 @@ aside {
 	height: ~"calc(100vh - "@after-header~" - 30px)";
 	.inner-container {
 		border-radius: 0 10px 10px 0;
+		left: -1.25%;
 	}
 }
 
@@ -168,8 +166,7 @@ aside {
 	background: #fff;
 	position: relative;
 	top: 2.5%;
-	left: -1.25%;
-	width: 102.5%;
+	width: 104%;
 	height: 95%;
 	box-shadow: 0 0 15px rgba(0,0,0,0.4);
 	overflow-y: scroll;
@@ -290,9 +287,89 @@ button {
 
 
 
+// ========================== MOBILE NAV =============================
 
+.mobile {
+	z-index: 2;
+	position: fixed;
+	left: 0;
+	bottom: 20px;
+	width: 165px;
+	height: 180px;
+	overflow: hidden;
+	text-align: center;
+	border-radius: 0 85px 85px 0;
+	display: none;
+	transform: translateX(-120px);
+	transition: transform 500ms ease-in-out;
+	&:hover {
+		transform: translateX(0);
+	}
+	li {
+		font: 400 27px/1.2em "Abril Fatface", Helvetica, serif;
+		text-shadow: 0 0 1px rgba(0,0,0,0.4);
+		color: #fff;
+		list-style: none;
+		padding: 4px 0;
+		cursor: pointer;
+		transition: background 300ms ease-in-out;
+		&:hover {
+			background: @orange;
+		}
+	}
+	> ul {
+		transform: rotateZ(-90deg) translateX(-6px);
+		background: darken(@orange, 10%);
+		> li {
+			background: @orange;
+			padding-bottom: 10px;
+		}
+	}
+}
 
+// ========================== RESPONSIVE =============================
 
+@media all and (max-width: 1311px) {
+	#user-title {
+		font-size: 20px;
+	}
+	.user {
+		font: 400 16px/1em "Poiret One", Arial, sans-serif;
+	}
+}
 
+@media all and (max-width: 995px) {
+	#recent-pics, #map-all {
+		.inner-container {
+			border-radius: 5px;
+			width: 100%;
+			left: 0;
+		}
+	}
+	.mobile {
+		display: inline-block;
+	}
+	.center-container {
+		width: 90%;
+		left: 5%;
+	}
+	#user-title {
+		font-size: 60px;
+	}
+	.user {
+		font: 400 40px/1em "Abril Fatface", Helvetica, serif;
+	}
+}
 
+@media all and (max-width: 731px) {
+	#title {
+		font-size: 45px;
+		letter-spacing: 1px;
+		margin-top: 40px;
+		margin-left: -80px;
+	}
+	.link {
+		font-size: 15px;
+	}
+}
 
