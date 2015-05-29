@@ -6,23 +6,21 @@ A single page web app that allows you to:
 * on your user profile.
 
 ##To Run:
-Make sure you have Node and npm installed
-Install and setup postgreSQL if you haven't already:
+Make sure you have Node and npm installed.
+Install, setup postgreSQL if you haven't already:
+```sh
     $ brew install postgresql
     $ initdb /usr/local/var/postgres -E utf8
-Lunchy makes it easy to launch postgres:
-    $ gem install lunchy
-    $ mkdir -p ~/Library/LaunchAgents
-    $ cp /usr/local/Cellar/postgresql/9.4.1/homebrew.mxcl.postgresql.plist ~/Library/LaunchAgents/
-    $ lunchy start postgres
-Create database named picllery:
-    $ createdb picllery
+    $ ln -sfv /usr/local/opt/postgresql/*.plist ~/Library/LaunchAgents
+```
+Create database named "picllery":
+`$ createdb picllery`
 Clone the repo:
-    $ git clone git@github.com:Tiffachow/Picllery.git
+`$ git clone git@github.com:Tiffachow/Picllery.git`
 Install the app and setup tables:
-    $ npm install
+`$ npm install`
 Start the server:
-    $ npm start
+`$ npm start`
 View in your browser at `http://localhost:3000`
 
 ##Tech
