@@ -3,24 +3,26 @@ $(function() {
 "use strict";
 
 var usernames,
-recent,
-username,
-first_name,
-last_name,
-email,
-prof_pic,
-bio;
+recent;
+// username,
+// first_name,
+// last_name,
+// email,
+// prof_pic,
+// bio;
+
+$('a').smoothScroll();
 
 var pic_wid = $(".pic").width();
 $(".pic").css({"height": pic_wid + "px"});
 
 $(".pic").hover(
-	function() {
-		$(this).css("opacity","0.7");
-	},
-	function() {
-		$(this).css("opacity","1");
-	}
+  function() {
+    $(this).css("opacity","0.7");
+  },
+  function() {
+    $(this).css("opacity","1");
+  }
 );
 
 $(".mobile > ul > li").click(alternateOpen);
@@ -47,21 +49,22 @@ $("#users-link").click(function(){
 
 //============================
 function hideAllPgs() {
-	$(".page").hide();
+  $(".page").hide();
+  $("#picture img").hide();
 }
 
 //============================
 
 function renderHomePg() {
-	hideAllPgs();
+  hideAllPgs();
   $(".home").show();
 }
 
 function renderCreateProfile() {
-	hideAllPgs();
-	$(".create-prof").show();
-	$("#pass-mismatch, #username-taken").hide();
-	createProfile();
+  hideAllPgs();
+  $(".create-prof").show();
+  $("#pass-mismatch, #username-taken").hide();
+  createProfile();
 }
 
 function createProfile() {
@@ -84,12 +87,13 @@ function createProfile() {
             $("#username-taken").hide();
             hideAllPgs();
             $(".profile").show();
-            username = data.username;
-            first_name = data.first_name;
-            last_name = data.last_name;
-            email = data.email;
-            prof_pic = data.prof_pic;
-            bio = data.bio;
+            $("#picture img").hide();
+            // username = data.username;
+            // first_name = data.first_name;
+            // last_name = data.last_name;
+            // email = data.email;
+            // prof_pic = data.prof_pic;
+            // bio = data.bio;
             console.log("Registered and created new profile for: " + data.username);
         }
       }).fail(function(a, b, c) {

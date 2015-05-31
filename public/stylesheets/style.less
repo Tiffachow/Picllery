@@ -32,12 +32,15 @@ body, .purple {
 // ================ FONTS / HEADINGS =================================
 
 a {
-	color: #00B7FF;
+	text-decoration: none;
+	&:hover, &:focus {
+		text-decoration: none;
+	}
 }
 
 .link {
 	transition: color 200ms ease-in-out;
-	&:hover {
+	&:hover, &:focus {
 		color: @orange;
 	}
 }
@@ -48,7 +51,7 @@ h1 {
 	text-shadow: 0 0 1px rgba(0,0,0,0.4);
 }
 
-h2 {
+h2, .nav-links, .scroll {
 	font: 400 27px/1em "Limelight", Helvetica, sans-serif;
 	text-shadow: 0 0 1px rgba(0,0,0,0.4);
 	color: @orange;
@@ -73,7 +76,7 @@ header {
 		position: fixed;
 		width: 30%;
 		right: 0;
-		top: 20px;
+		top: 2.5%;
 		h1 {
 			position: relative;
 			width: 140px;
@@ -83,12 +86,11 @@ header {
 			cursor: pointer;
 		}
 	}
-
 }
 
 #title {
 	position: relative;
-	margin-top: 15px;
+	margin-top: 1%;
 	margin-left: 8%;
 	width: 400px;
 	letter-spacing: 10px;
@@ -103,12 +105,10 @@ aside {
 	z-index: 0;
 	position: fixed;
 	top: @after-header;
+	background: none;
 	height: ~"calc(100vh - "@after-header~" - 30px)";
-	background: @light-purple;;
-	box-shadow: -2px 0 3px rgba(0,0,0,0.1);
 	padding: 0;
-	overflow-y: scroll;
-	overflow-x: hidden;
+	overflow: hidden;
 }
 
 #user-title {
@@ -121,9 +121,10 @@ aside {
 .users {
 	position: relative;
 	width: 100%;
-	height: 85%;
+	height: 70%;
 	top: 0;
 	overflow-x: hidden;
+	overflow-y: scroll;
 }
 
 .user {
@@ -133,7 +134,8 @@ aside {
 	margin: 0;
 	color: #fff;
 	cursor: pointer;
-	overflow-y: scroll;
+	overflow-x: scroll;
+	overflow-y: hidden;
 	transition: color 500ms ease-in-out;
 	&:hover {
 		color: @dark-purple;
@@ -142,6 +144,10 @@ aside {
 
 // ========================== FRONT PAGE MAP & RECENT =============================
 
+.home {
+	z-index: 2;
+}
+
 #map-all {
 	position: absolute;
 	top: @after-header;
@@ -149,6 +155,11 @@ aside {
 	.inner-container {
 		border-radius: 10px 0 0 10px;
 		left: -2.75%;
+	}
+	.map-pic {
+		display: none;
+		width: 180px;
+		height: 180px;
 	}
 }
 
@@ -163,6 +174,7 @@ aside {
 }
 
 .inner-container {
+	z-index: 1;
 	background: #fff;
 	position: relative;
 	top: 2.5%;
@@ -174,7 +186,9 @@ aside {
 		text-align: center;
 		z-index: 1;
 	}
-	.pic {
+}
+
+.pic {
 		display: inline-block;
 		position: relative;
 		cursor: pointer;
@@ -182,8 +196,11 @@ aside {
 		background: @dark-purple;
 		vertical-align: top;
 		transition: opacity 500ms ease-in-out;
+		img {
+			max-width: 100%;
+			height: auto;
+		}
 	}
-}
 
 
 // ========================== LOGIN & CREATE PROFILE PAGES =============================
@@ -197,12 +214,12 @@ aside {
 	border-radius: 0 0 10px 10px;
 	height: 550px;
 	background: #fff;
+	margin-bottom: 80px;
 }
 
 .create-prof {
 	.center-container {
-		height: 900px;
-		margin-bottom: 80px;
+		height: 850px;
 	}
 	label {
 		font-size: 20px;
@@ -213,9 +230,15 @@ aside {
 	}
 }
 
+.login {
+	.center-container {
+		height: 400px;
+	}
+}
+
 #login-form {
 	position: relative;
-	top: 30%;
+	top: 50px;
 	width: 75%;
 	left: 25% / 2;
 }
@@ -284,7 +307,49 @@ button {
 
 // ========================== PROFILE PAGES =============================
 
-
+.profile {
+	.center-container {
+		width: 90%;
+		left: 5%;
+		#profile {
+			height: 22%;
+			background: red;
+		}
+		.gallery {
+			overflow-y: scroll;
+			height: ~"calc(78% - 15px)";
+			background: pink;
+			div {
+				height: 100%;
+				left: 0px;
+				div {
+					position: relative;
+					width: ~"calc(100% + 30px)";
+					left: -15px;
+				}
+			}
+			#gallery {
+				overflow-y: scroll;
+				overflow-x: hidden;
+				background: blue;
+				.pic {
+					width: ~"calc((100% + 30px) / 3)";
+				}
+			}
+			#picture {
+				background: yellow;
+				img {
+					width: 100%;
+					height: 100%;
+					background: #fff;
+				}
+			}
+			#map {
+				background: purple;
+			}
+		}
+	}
+}
 
 
 // ========================== MOBILE NAV =============================
@@ -327,6 +392,24 @@ button {
 	}
 }
 
+.profile-mobile {
+	display: none;
+	position: fixed;
+	bottom: 40px;
+	text-align: center;
+	width: 100%;
+	a {
+		.link;
+		.nav-links;
+		color: #fff;
+		font-size: 20px;
+		margin-right: 10px;
+		&:last-child {
+			margin-right: 0;
+		}
+	}
+}
+
 // ========================== RESPONSIVE =============================
 
 @media all and (max-width: 1311px) {
@@ -339,6 +422,9 @@ button {
 }
 
 @media all and (max-width: 995px) {
+	aside {
+		background: @light-purple;
+	}
 	#recent-pics, #map-all {
 		.inner-container {
 			border-radius: 5px;
@@ -346,7 +432,7 @@ button {
 			left: 0;
 		}
 	}
-	.mobile {
+	.mobile, .profile-mobile {
 		display: inline-block;
 	}
 	.center-container {
@@ -363,13 +449,22 @@ button {
 
 @media all and (max-width: 731px) {
 	#title {
-		font-size: 45px;
+		font-size: 40px;
 		letter-spacing: 1px;
 		margin-top: 40px;
-		margin-left: -80px;
+		margin-left: -90px;
 	}
 	.link {
-		font-size: 15px;
+		font-size: 12px;
+	}
+	.profile .center-container {
+		height: ~"calc(100vh - 230px)";
+		#profile {
+			height: 30%;
+		}
+		.gallery {
+			height: ~"calc(70% - 15px)";
+		}
 	}
 }
 

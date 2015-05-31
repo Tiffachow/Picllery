@@ -142,7 +142,7 @@ router.post('/api/login', function(req, res) {
       // Close connection
       client.end();
     });
-    
+
     // Handle Errors for connecting to client
     if(err) {
       console.log(err);
@@ -182,7 +182,7 @@ router.get('/api/profile/<username>', function(req, res) {
 // ================================================================================
 
 /* GET pictures. */
-router.get('/api/pictures', function(req, res) {
+router.get('/api/pictures/<username>', function(req, res) {
   var pic_results = [];
   var own_pics_results = [];
   var username = req.params["username"];
@@ -207,7 +207,7 @@ router.get('/api/pictures', function(req, res) {
         pic_results.push(row);
       });
       pics_query.on('end', function() {
-        return res.json({pic_results: pic_results});
+        return res.json(pic_results);
       });
     }
 

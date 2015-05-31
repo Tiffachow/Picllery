@@ -7,6 +7,11 @@
     <link rel='stylesheet' href='https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap.min.css' />
     <link href='http://fonts.googleapis.com/css?family=Poiret+One|Limelight|Abril+Fatface' rel='stylesheet' type='text/css'>
     <link rel='stylesheet' href='/stylesheets/style.css' />
+    <script src="https://code.jquery.com/jquery-2.1.4.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/js/bootstrap.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.3.15/angular.min.js"></script>
+    <script src="/javascripts/jquery.smooth-scroll.min.js"></script>
+    <script src="/javascripts/main.js"></script>
   </head>
   <body>
     <header>
@@ -23,19 +28,22 @@
         <aside class="section col-xs-12 col-sm-12 col-md-1 col-lg-1 pull-right">
           <h2 id="user-title">USERS</h2>
           <nav class="users">
-            <h1 class="user" ng-repeat="user in users.usernames" ng-click="viewProfile()">{{ user.username }}</h1>
+            <h1 class="user" ng-repeat="user in users.usernames" ng-click="viewProfile(user.username)">{{ user.username }}</h1>
           </nav>
         </aside>
         <div class="container-fluid">
           <div id="map-all" class="section purple col-xs-12 col-sm-12 col-md-5 col-md-offset-1 col-lg-5 col-lg-offset-1">
             <div class="inner-container">
-              
+              <ul>
+                <li ng-repeat="pic in users.recent">{{ pic.location }}<img src="{{ pic.picture }}" class="map-pic"></li>
+              </ul>
             </div>
           </div>
           <div id="recent-pics" class="section purple col-xs-12 col-sm-12 col-md-5 col-md-offset-6 col-lg-5 col-lg-offset-6">
             <div class="inner-container">
               <span><h2>RECENT</h2></span>
-              <img ng-repeat="pic in users.recent" src="{{ pic.picture }}" class="pic">
+              <div ng-repeat="pic in users.recent" class="pic"><img src="{{ pic.picture }}"></div>
+              <div class="pic"><img></div><div class="pic"><img></div><div class="pic"><img></div>
             </div>
           </div>
         </div>
@@ -92,34 +100,57 @@
           </form>
         </div>
       </div>
-    </div> 
+    </div>
 
     <!-- PROFILE PAGE -->
     <div class="container-fluid profile page" ng-controller="profileController">
       <div class="row">
         <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 center-container">
-          
+          <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12" id="profile"></div>
+          <div class="gallery col-xs-12 col-sm-12 col-md-12 col-lg-12 row">
+            <div class="col-xs-12 col-sm-12 col-md-4 col-lg-4" >
+              <div id="gallery"> <!-- GALLERY -->
+                <div class="pic"><a href="#picture"><img ng-click="displayPic()" src="http://www.wallulung.com/wp-content/uploads/2015/04/baby_rabbit_894_cute_animal.jpg"></a></div><div class="pic"><img ng-click="displayPic()" src="http://www.wallulung.com/wp-content/uploads/2015/04/baby_rabbit_894_cute_animal.jpg"></div><div class="pic"><img ng-click="displayPic()" src="http://www.wallulung.com/wp-content/uploads/2015/04/baby_rabbit_894_cute_animal.jpg"></div><div class="pic"><img ng-click="displayPic()" src="http://www.wallulung.com/wp-content/uploads/2015/04/baby_rabbit_894_cute_animal.jpg"></div><div class="pic"><img ng-click="displayPic()" src="http://www.wallulung.com/wp-content/uploads/2015/04/baby_rabbit_894_cute_animal.jpg"></div><div class="pic"><img ng-click="displayPic()" src="http://www.wallulung.com/wp-content/uploads/2015/04/baby_rabbit_894_cute_animal.jpg"></div>
+                <img ng-click="displayPic()" ng-repeat="pic in user_pics" src="{{ pic.picture }}" class="pic">
+                <img ng-click="displayPic()" ng-repeat="pic in user_pics" src="{{ pic.picture }}" class="pic">
+              </div>
+            </div>
+            <div class="col-xs-12 col-sm-12 col-md-4 col-lg-4">
+              <div id="picture"><img></div> <!-- PICTURE -->
+            </div>
+            <div class="col-xs-12 col-sm-12 col-md-4 col-lg-4">
+              <div id="map"></div> <!-- MAP -->
+            </div>
+          </div>
         </div>
+        <nav class="profile-mobile">
+          <a href="#gallery">Gallery</a>
+          <a href="#picture">Picture</a>
+          <a href="#map">Location</a>
+        </nav>
       </div>
-    </div> 
-    
-    
+    </div>
 
-    <div id="footer">      
+
+    <div id="footer">
       <p><small>Copyright &#169; 2015 Picllery. All rights reserved.</small></p>
     </div>
-    <script src="https://code.jquery.com/jquery-2.1.4.min.js"></script>
-    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/js/bootstrap.min.js"></script>
-    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.3.15/angular.min.js"></script>
-    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.2.25/angular-route.min.js"></script>
-    <script src="/javascripts/main.js"></script>
     <script>
-      var username;
-      var piclleryApp = angular.module("piclleryApp", []);
-      // piclleryApp.factory('username', function(){
-      //   return username = null;
-      // });
-      piclleryApp.controller("homeController", ['$scope', '$http', function($scope, $http) {
+      var piclleryApp = angular.module("piclleryApp", [])
+      .factory('getUsernameService', function(){
+        var username;
+        var viewProfile = function(selected_username) {
+          $(".page").hide();
+          $(".profile").show();
+          username = String(selected_username);
+          console.log(username);
+          return username;
+        };
+        return {
+          viewProfile : viewProfile
+        }
+      })
+      .controller("homeController", ['$scope', '$http', 'getUsernameService', function($scope, $http, getUsernameService) {
         // when landing on the page, get all usernames and show them
         $http.get('/api/home')
           .success(function(data) {
@@ -132,15 +163,10 @@
           .error(function(data) {
             console.log('Error: ' + data);
           });   
-        $scope.viewProfile = function() {
-          $(".page").hide();
-          $(".profile").show();
-          username = $(".user").html();
-          console.log($(".user").html());
-        };  
-      }]);
-      piclleryApp.controller("profileController", ['$scope', '$http', function($scope, $http) {
-        $http.get('/api/profile/' + username)
+        $scope.viewProfile = getUsernameService.viewProfile;
+      }])
+      .controller("profileController", ['$scope', '$http', 'getUsernameService', function($scope, $http, getUsernameService) {
+        $http.get('/api/profile/\?username=' + username)
           .success(function(data) {
             $scope.profile = {
               username: data.username,
@@ -154,35 +180,33 @@
           .error(function(data) {
             console.log('Error: ' + data);
           });
-      }]);
-      piclleryApp.controller("picturesController", ['$scope', '$http', function($scope, $http) {
-        $http.get('/api/pictures')
+        $http.get('/api/pictures/\?username=' + username)
           .success(function(data) {
-            $scope.pictures = {
-              picture: picture,
-              location: location,
-              likes: likes,
-              priv: priv
-            };
+            $scope.user_pics = data;
           })
           .error(function(data) {
             console.log('Error: ' + data);
           });
+        $scope.displayPic = function() {
+          console.log($(this));
+          var img = $(this).attr("src");
+          $("#picture img").show().attr("src",img);
+        };
       }]);
-      piclleryApp.controller("pictureController", ['$scope', '$http', function($scope, $http) {
-        $http.get('/api/picture')
-          .success(function(data) {
-            $scope.pictures = {
-              picture: picture,
-              location: location,
-              likes: likes,
-              priv: priv
-            };
-          })
-          .error(function(data) {
-            console.log('Error: ' + data);
-          });
-      }]);
+      // piclleryApp.controller("pictureController", ['$scope', '$http', function($scope, $http) {
+      //   $http.get('/api/picture')
+      //     .success(function(data) {
+      //       $scope.pictures = {
+      //         picture: picture,
+      //         location: location,
+      //         likes: likes,
+      //         priv: priv
+      //       };
+      //     })
+      //     .error(function(data) {
+      //       console.log('Error: ' + data);
+      //     });
+      // }]);
     </script>
   </body>
 </html>
