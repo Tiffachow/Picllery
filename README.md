@@ -42,3 +42,4 @@ View in your browser at `http://localhost:3000`
 
 recently done: added authentication, updated API, updated readme, added angular directives
 recently done: added mobile nav, added more responsiveness to pgs
+recently done: added API routes for delete profile, update profile, post new picture, update picture, delete picture, updated angular ajax requests

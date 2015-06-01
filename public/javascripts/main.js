@@ -11,8 +11,6 @@ recent;
 // prof_pic,
 // bio;
 
-$('a').smoothScroll();
-
 var pic_wid = $(".pic").width();
 $(".pic").css({"height": pic_wid + "px"});
 
@@ -111,10 +109,36 @@ function createProfile() {
 function renderLoginPg() {
 	hideAllPgs();
 	$(".login").show();
+  submitLogin();
+}
+
+function renderUploadPg() {
+	hideAllPgs();
+  $(".upload").show();
+  uploadNewPic();
 }
 
 function uploadNewPic() {
-	hideAllPgs();
+  $("#upload-form").on("submit", function() {
+    var address = $("#location").val();
+    geocoder.geocode( { 'address': address}, function(results, status) {
+      if (status == google.maps.GeocoderStatus.OK) {
+        $("#location").val(results[0].geometry.location);
+        $.ajax({
+          url: "/api/picture",
+          type: "POST",
+          data: $("#upload-form").serialize
+        }).done(function(data) {
+          console.log("Posted new pic!");
+        }).fail(function(a, b, c) {
+          console.log("Failed to post new pic... :(");
+          console.log(a, b, c);
+        });
+      } else {
+        alert("Geocode was not successful for the following reason: " + status + ". Please try another address.");
+      }
+    });
+  });
 }
 //============================
 
@@ -123,5 +147,6 @@ renderHomePg();
 $("#title").click(renderHomePg);
 $("#login").click(renderLoginPg);
 $("#create-prof").click(renderCreateProfile);
+$("#upload").click(renderUploadPg);
 
 });

@@ -221,37 +221,23 @@ aside {
 	.center-container {
 		height: 850px;
 	}
-	label {
-		font-size: 20px;
-	}
-	input, textarea, .form-control {
-		font: 400 18px/1em "Abril Fatface", Helvetica, serif;
-		letter-spacing: 1px;
-	}
 }
 
-.login {
+.login, .upload {
 	.center-container {
 		height: 400px;
 	}
 }
 
-#login-form {
+#login-form, #create-prof-form, #upload-form {
 	position: relative;
 	top: 50px;
-	width: 75%;
-	left: 25% / 2;
-}
-
-#create-prof-form {
-	position: relative;
-	top: 5%;
 	width: 80%;
 	left: 10%;
 }
 
-label, input, button, .form-control {
-	font: 400 35px/1em "Limelight", Helvetica, sans-serif;
+label, input, button, textarea, .form-control {
+	font: 400 20px/1em "Limelight", Helvetica, sans-serif;
 	text-shadow: 0 0 1px rgba(0,0,0,0.4);
 	color: @dark-purple;
 }
@@ -262,7 +248,6 @@ input, .form-control {
 	background: @light-purple;
 	border: 0;
 	color: #fff;
-	font-size: 30px;
 	border-radius: 5px;
 	box-shadow: 0 0 5px rgba(0,0,0,0.4);
 	&:focus {
