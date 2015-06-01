@@ -6,21 +6,11 @@ var router = express.Router();
 router.use(multer()); // for parsing multipart/form-data
 // ================================================================================
 
-
-
-// router.use(function(req, res, next) {
-//   if (!req.user) {
-//     res.json({logged_in: false});
-//     next();
-//   } else {
-//     next();
-//   }
-// });
-
 /* GET home page. */
 router.get('/api/home', function(req, res) {
   var results_usernames = [];
   var results_recent = [];
+  var results_popular = [];
 
   // Get a Postgres client from the connection pool
   pg.connect(conString, function(err, client, done) {
@@ -32,23 +22,33 @@ router.get('/api/home', function(req, res) {
     });
 
     // SQL Query > Select Recent Public Pics Data from ALL Pics
-    var recent_query = client.query("SELECT * FROM pics WHERE private = 'f' ORDER BY id DESC LIMIT 60");
+    var recent_query = client.query("SELECT * FROM pics WHERE private = 'f' ORDER BY id DESC LIMIT 30");
     // Stream results back one row at a time
     recent_query.on('row', function(row) {
       results_recent.push(row);
     });
+
+    // SQL Query > Select Popular Public Pics Data from ALL Pics
+    var popular_query = client.query("SELECT * FROM pics WHERE private = 'f' ORDER BY likes DESC LIMIT 30");
+    // Stream results back one row at a time
+    popular_query.on('row', function(row) {
+      results_popular.push(row);
+    });
+
     // After all data is returned, close connection and return results
     username_query.on('end', function() {
       recent_query.on('end', function() {
-        client.end();
-        var logged_in_as;
-        // if logged in, set the username that's logged in
-        if (req.session && req.session.user) {
-          logged_in_as = req.session.user.username;
-        } else {
-          logged_in_as = null;
-        }
-        return res.json({usernames: results_usernames, recent: results_recent, logged_in_as: logged_in_as});
+        popular_query.on('end', function() {
+          client.end();
+          var logged_in_as;
+          // if logged in, set the username that's logged in
+          if (req.session && req.session.user) {
+            logged_in_as = req.session.user.username;
+          } else {
+            logged_in_as = null;
+          }
+          return res.json({usernames: results_usernames, recent: results_recent, popular: results_popular, logged_in_as: logged_in_as});
+        });
       });
     });
 
@@ -68,16 +68,18 @@ router.post('/api/login', function(req, res) {
     username: req.body["username"],
     password: req.body["password"]
   };
+  console.log(data.username + data.password);
   // Get a Postgres client from the connection pool
   pg.connect(conString, function(err, client, done) {
     // SQL Query > Select Password from Existing User
-    var pass_query = client.query("SELECT password FROM users WHERE username = $1", [data.username], function(err, result) {
-      // Handle errors when can't select password from username
+    client.query("SELECT password FROM users WHERE username = $1", [data.username], function(err, result) {
+      // Handle query error: there's no such username in db
       if (err) {
-        console.log(err + " Invalid username or password.");
+        return res.json({invalid_password: true, invalid_username: true});
       }
+      console.log(result.rows); // WHY IS IT EMPTY??????
       // If passwords match, select and return all user data but password
-      if (data.password === result) {
+      if (data.password === result.rows[0]) {
         // SQL Query > Select All Data but Password from Existing User
         var query = client.query("SELECT username, first_name, last_name, email, prof_pic, bio FROM users WHERE username = $1", [data.username], function(err, result) {
           // Handle errors for query
@@ -90,13 +92,15 @@ router.post('/api/login', function(req, res) {
             // Stores user info by setting cookie
             // Setting a property will automatically cause a Set-Cookie response to be sent
             req.session.user = user;
-            req.user = user;
             // Delete password from cookie
             delete req.session.user.password;
             return res.json(user);
           });
         });
-      };
+      }
+      else {
+        return res.json({invalid_password: true});
+      }
       // Close connection
       client.end();
     });
@@ -122,11 +126,12 @@ router.post('/api/register', function(req, res) {
     prof_pic: req.body["prof-pic"],
     bio: req.body["bio"]
   };
+  console.log(req.body.username);
   // Get a Postgres client from the connection pool
   pg.connect(conString, function(err, client, done) {
     // Check if username exists, if not, create a new user in db with input data
-    client.query("SELECT username FROM users WHERE username = $1", [data.username], function(err, result){
-      if (err) {
+    client.query("SELECT username FROM users WHERE username = $1", [data.username], function(error, result){
+      if (error) {
         // SQL Query > Insert Data for New User
         client.query({
           text: "INSERT INTO users(username, password, first_name, last_name, email, prof_pic, bio) values($1, $2, $3, $4, $5, $6, $7)",
@@ -141,7 +146,11 @@ router.post('/api/register', function(req, res) {
           // After all data is returned, return results
           query.on('end', function() {
             client.end();
-            return res.json(result.rows[0]);
+            var user = result.rows[0];
+            req.session.user = user;
+            // Delete password from cookie
+            delete req.session.user.password;
+            return res.json(user);
           });
         });
       }
@@ -163,6 +172,7 @@ router.post('/api/register', function(req, res) {
 /* GET profile. */
 router.get('/api/profile/:username', function(req, res) {
   var username = req.params["username"];
+  console.log(username);
   // Get a Postgres client from the connection pool
   pg.connect(conString, function(err, client, done) {
     // SQL Query > Select Data from User
@@ -214,7 +224,11 @@ router.put('/api/profile/:username', function(req, res) {
           console.log(err);
         }
         else {
-          return res.send("Updated profile!");
+          client.query("SELECT username, first_name, last_name, email, prof_pic, bio from users WHERE user = $1", [data.username], function(err, result){
+            var user = result.rows[0];
+            req.session.user = user;
+            return res.json(user);
+          });
         }
       });
     }
@@ -248,12 +262,14 @@ router.delete('/api/profile/:username', function(req, res) {
         // After all data is returned, return results
         query.on('end', function() {
           client.end();
+          // End session
+          delete req.session.user;
           return res.send("Profile deleted.");
         });
       });
     }
     else {
-      return res.json({logged_in: false});
+      return res.json({not_logged_in: true});
     }
     
     // Handle Errors for connection
@@ -284,7 +300,7 @@ router.post('/api/picture/:username', function(req, res) {
   // Get a Postgres client from the connection pool
   pg.connect(conString, function(err, client, done) {
     // SQL Query > If Logged In, 
-    if (req.session && req.session.user && username === req.session.user.username) {
+    if (req.session && req.session.user && data.username === req.session.user.username) {
       client.query("INSERT INTO pics(username, picture, location, private) values($1, $2, $3, $4)", [data.username, data.picture, data.location, data.private]);
     }
     else {
@@ -307,6 +323,7 @@ router.get('/api/pictures/:username', function(req, res) {
   var pic_results = [];
   var own_pics_results = [];
   var username = req.params["username"];
+  // var username = req.query["username"];
   // Get a Postgres client from the connection pool
   pg.connect(conString, function(err, client, done) {
     // SQL Query > Select All Pics, Private and Public, from Logged In User
@@ -330,6 +347,10 @@ router.get('/api/pictures/:username', function(req, res) {
       pics_query.on('end', function() {
         return res.json(pic_results);
       });
+      pics_query.on('error', function(error) {
+        console.log("No public pics from user.");
+        return res.json({no_pics: true});
+      });
     }
 
     client.end();
@@ -345,6 +366,7 @@ router.get('/api/pictures/:username', function(req, res) {
 
 /* UPDATE picture. */
 router.put('/api/picture/:id', function(req, res) {
+  var id = req.params["id"];
   res.end();
 });
 
@@ -352,6 +374,7 @@ router.put('/api/picture/:id', function(req, res) {
 
 /* DELETE picture. */
 router.delete('/api/picture/:id', function(req, res) {
+  var id = req.params["id"];
   res.end();
 });
 

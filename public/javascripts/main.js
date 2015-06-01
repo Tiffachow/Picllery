@@ -2,15 +2,6 @@ $(function() {
 
 "use strict";
 
-var usernames,
-recent;
-// username,
-// first_name,
-// last_name,
-// email,
-// prof_pic,
-// bio;
-
 var pic_wid = $(".pic").width();
 $(".pic").css({"height": pic_wid + "px"});
 
@@ -49,6 +40,8 @@ $("#users-link").click(function(){
 function hideAllPgs() {
   $(".page").hide();
   $("#picture img").hide();
+  $(".error").hide();
+  $("#picture img").hide();
 }
 
 //============================
@@ -56,54 +49,26 @@ function hideAllPgs() {
 function renderHomePg() {
   hideAllPgs();
   $(".home").show();
+  var latlng = new google.maps.LatLng(40.712784, -74.005941);
+  var mapOptions = {
+    zoom: 8,
+    center: latlng
+  }
+  var map = new google.maps.Map(document.getElementById("map-canvas"), mapOptions);
 }
 
 function renderCreateProfile() {
   hideAllPgs();
   $(".create-prof").show();
-  $("#pass-mismatch, #username-taken").hide();
-  createProfile();
+  $("#edit-prof").hide();
+  $("#submit-prof").show();
 }
 
-function createProfile() {
-	$("#create-prof-form").on("submit", function() {
-		event.preventDefault();
-		console.log("create profile form submitted");
-		var password1 = $("#new-password").val();
-		var password2 = $("#re-password").val();
-		if (password1 === password2) {
-			$("#pass-mismatch").hide();
-			$.ajax({
-        url: "/api/register",
-        type: "POST",
-        data: $("#create-prof-form").serialize()
-      }).done(function(data){
-        if (data.username_taken) {
-            $("#username-taken").show();
-        }
-        else {
-            $("#username-taken").hide();
-            hideAllPgs();
-            $(".profile").show();
-            $("#picture img").hide();
-            // username = data.username;
-            // first_name = data.first_name;
-            // last_name = data.last_name;
-            // email = data.email;
-            // prof_pic = data.prof_pic;
-            // bio = data.bio;
-            console.log("Registered and created new profile for: " + data.username);
-        }
-      }).fail(function(a, b, c) {
-        console.log("Failed to post/register... :(");
-        console.log(a, b, c);
-      });
-  	}
-  	else {
-  		$("#pass-mismatch").show();
-  		console.log("Failed to register; passwords do not match.");
-  	}
-	});
+function renderEditProfile() {
+  hideAllPgs();
+  $(".update-prof").show();
+  $("#edit-prof").show();
+  $("#submit-prof").hide();
 }
 
 function renderLoginPg() {
@@ -121,13 +86,14 @@ function renderUploadPg() {
 function uploadNewPic() {
   $("#upload-form").on("submit", function() {
     var address = $("#location").val();
+    geocoder = new google.maps.Geocoder();
     geocoder.geocode( { 'address': address}, function(results, status) {
       if (status == google.maps.GeocoderStatus.OK) {
         $("#location").val(results[0].geometry.location);
         $.ajax({
-          url: "/api/picture",
+          url: "/api/picture" + username,
           type: "POST",
-          data: $("#upload-form").serialize
+          data: $("#upload-form").serialize()
         }).done(function(data) {
           console.log("Posted new pic!");
         }).fail(function(a, b, c) {
@@ -148,5 +114,6 @@ $("#title").click(renderHomePg);
 $("#login").click(renderLoginPg);
 $("#create-prof").click(renderCreateProfile);
 $("#upload").click(renderUploadPg);
+$("#edit").click(renderEditProfile);
 
 });
