@@ -74,16 +74,39 @@ header {
 	z-index: 1;
 	nav {
 		position: fixed;
-		width: 30%;
+		width: 38%;
 		right: 0;
 		top: 2.5%;
 		h1 {
 			position: relative;
-			width: 140px;
-			text-align: right;
-			left: ~"calc(100% - 140px - 30%)";
+			width: auto;
 			font-size: 20px;
 			cursor: pointer;
+		}
+		#status {
+			display: inline-block;
+			position: absolute;
+			width: 100%;
+			text-align: right;
+			padding-right: 20px;
+			margin-top: 25px;
+			right: ~"calc(30% + 140px)";
+			#logout {
+				cursor: pointer;
+			}
+			strong {
+				font-size: 25px;
+			}
+			p {
+				margin-bottom: 25px;
+			}
+		}
+		#links {
+			display: inline-block;
+			position: absolute;
+			text-align: left;
+			right: 30%;
+			width: 140px;
 		}
 	}
 }
@@ -97,6 +120,9 @@ header {
 	text-align: center;
 	text-shadow: 0 0 2px rgba(0,0,0,0.4);
 	cursor: pointer;
+	span {
+		color: @orange;
+	}
 }
 
 // ========================== ASIDE / NAV =============================
@@ -121,7 +147,7 @@ aside {
 .users {
 	position: relative;
 	width: 100%;
-	height: 70%;
+	height: 85%;
 	top: 0;
 	overflow-x: hidden;
 	overflow-y: scroll;
@@ -152,6 +178,7 @@ aside {
 	position: absolute;
 	top: @after-header;
 	height: ~"calc(100vh - "@after-header~" - 30px)";
+	margin-left: 15px;
 	.inner-container {
 		border-radius: 10px 0 0 10px;
 		left: -2.75%;
@@ -167,6 +194,7 @@ aside {
 	position: absolute;
 	top: @after-header;
 	height: ~"calc(100vh - "@after-header~" - 30px)";
+	padding-left: 30px;
 	.inner-container {
 		border-radius: 0 10px 10px 0;
 		left: -1.25%;
@@ -209,12 +237,19 @@ aside {
 		position: relative;
 		cursor: pointer;
 		width: (100% / 3);
+		height: 100%;
 		background: @dark-purple;
 		vertical-align: top;
+		overflow: hidden;
 		transition: opacity 500ms ease-in-out;
 		img {
-			max-width: 100%;
+			position: relative;
+			width: 200%;
+			left: -50%;
 			height: auto;
+			&:hover {
+				opacity: 80%;
+			}
 		}
 	}
 
@@ -310,25 +345,78 @@ button {
 
 .profile {
 	.center-container {
+		background: @orange;
 		width: 90%;
 		left: 5%;
 		#profile {
+			position: relative;
 			height: 22%;
-			background: red;
-		}
-		.profile {
-			#fullname {}
-			#profile-pic {}
+			width: 100%;
+			background: #fff;
+			overflow: hidden;
+			#full-name {
+				position: relative;
+				display: inline-block;
+				width: 40%;
+				vertical-align: top;
+				h1 {
+					position: relative;
+					top: 15px;
+					left: 15px;
+					font-size: 32px;
+					color: @dark-purple;
+				}
+			}
+			#profile-pic {
+				position: relative;
+				display: inline-block;
+				margin-top: 7px;
+				width: 100px;
+				height: 90%;
+				background: @light-purple;
+				border: 2px solid @dark-purple;
+				overflow: hidden;
+				img {
+					width: 100%;
+					height: auto;
+				}
+			}
 			.details {
+				vertical-align: top;
+				position: relative;
+				display: inline-block;
+				width: 40%;
+				top: 15%;
+				height: 70%;
+				overflow: hidden;
 				span {
-
+					font-size: 13px;
+					color: @orange;
 				}
 				h2 {
-
+					font-size: 16px;
+					margin: 0;
+					color: @light-purple;
+					div {
+						position: relative;
+						width: 100%;
+						height: 30px;
+						overflow-y: scroll;
+					}
 				}
 			}
 			.prof-options {
-
+				vertical-align: top;
+				position: relative;
+				display: inline-block;
+				width: 10%;
+				top: 15%;
+				height: 70%;
+				p {
+					margin-top: 15px;
+					cursor: pointer;
+					text-align: center;
+				}
 			}
 		}
 		.gallery {
@@ -340,33 +428,42 @@ button {
 				left: 0px;
 				div {
 					position: relative;
-					width: ~"calc(100% + 30px)";
-					left: -15px;
+					width: 100%;
 				}
 			}
 			#gallery {
 				overflow-y: scroll;
 				overflow-x: hidden;
-				background: blue;
+				background: @dark-purple;
 				.pic {
-					width: ~"calc((100% + 30px) / 3)";
+					width: ~"calc(100% / 3)";
+					height: 10px;
+					display: inline-block;
 				}
 			}
 			#picture {
-				background: yellow;
+				background: @orange;
+				overflow-y: scroll;
+				cursor: move;
 				img {
 					width: 100%;
-					height: 100%;
+					height: auto;
 					background: #fff;
 				}
 			}
-			#map {
-				background: purple;
+			#map-canvas-user {
+				.gm-style * {
+				  width: auto;
+				  height: auto;
+				}
 			}
 		}
 	}
 }
-
+.no-padding {
+   padding: 0 !important;
+   margin: 0 !important;
+}
 
 // ========================== MOBILE NAV =============================
 
@@ -433,7 +530,7 @@ button {
 		font-size: 20px;
 	}
 	.user {
-		font: 400 16px/1em "Poiret One", Arial, sans-serif;
+		font: 400 20px/1.5em "Poiret One", Arial, sans-serif;
 	}
 }
 
@@ -442,6 +539,8 @@ button {
 		background: @light-purple;
 	}
 	#recent-pop-pics, #map-all {
+		margin: 0;
+		padding: 0 15px;
 		.inner-container {
 			border-radius: 5px;
 			width: 100%;
@@ -459,7 +558,16 @@ button {
 		font-size: 60px;
 	}
 	.user {
-		font: 400 40px/1em "Abril Fatface", Helvetica, serif;
+		font: 400 40px/1.5em "Abril Fatface", Helvetica, serif;
+	}
+	.profile .center-container {
+		#profile {
+			#full-name {
+				h1 {
+					font-size: 20px;
+				}
+			}
+		}
 	}
 }
 
@@ -470,17 +578,28 @@ button {
 		margin-top: 40px;
 		margin-left: -90px;
 	}
-	.link {
-		font-size: 12px;
+header nav {
+	#links {
+		margin-top: 50px;
+		text-align: right;
+		h1 {
+			line-height: 1em;
+		}
 	}
+	#status {
+		width: 300px;
+		margin-top: 0;
+		margin-right: -160px;
+		p {
+			margin-bottom: 10px;
+		}
+	}
+	.link, #status p, #status p strong {
+		font-size: 15px;
+	}
+}
 	.profile .center-container {
 		height: ~"calc(100vh - 230px)";
-		#profile {
-			height: 30%;
-		}
-		.gallery {
-			height: ~"calc(70% - 15px)";
-		}
 	}
 }
 
