@@ -68,11 +68,10 @@ router.post('/api/login', function(req, res) {
     username: req.body["username"],
     password: req.body["password"]
   };
-  console.log(data.username + data.password);
   // Get a Postgres client from the connection pool
   pg.connect(conString, function(err, client, done) {
-    // SQL Query > Select Password from Existing User
-    client.query("SELECT password FROM users WHERE username = $1", [data.username], function(err, result) {
+    // SQL Query > Select Password from Existing User, username case insensitive
+    client.query("SELECT password FROM users WHERE LOWER(username) = LOWER($1)", [data.username], function(err, result) {
       // Handle query error: there's no such username in db
       if (err || result.rows.length == 0) {
         return res.json({invalid_password: true, invalid_username: true});
@@ -80,7 +79,7 @@ router.post('/api/login', function(req, res) {
       // If passwords match, select and return all user data but password
       if (data.password === result.rows[0].password) {
         // SQL Query > Select All Data but Password from Existing User
-        var query = client.query("SELECT username, first_name, last_name, email, prof_pic, bio FROM users WHERE username = $1", [data.username], function(err, result) {
+        var query = client.query("SELECT username, first_name, last_name, email, prof_pic, bio FROM users WHERE LOWER(username) = LOWER($1)", [data.username], function(err, result) {
           // Handle errors for query
           if (err) {
             console.log(err);
@@ -94,6 +93,7 @@ router.post('/api/login', function(req, res) {
             // Setting a property will automatically cause a Set-Cookie response to be sent
             // Start user session
             req.session.user = user;
+            console.log(user);
             return res.json({user: user, logged_in_as: req.session.user.username});
           });
         });
@@ -117,7 +117,7 @@ router.post('/api/login', function(req, res) {
 /* GET logout. */
 router.get('/api/logout/', function(req, res) {
   // End user session
-  req.session.reset;
+  delete req.session.user;
   return res.json({logged_in_as: null});
 });
 

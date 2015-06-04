@@ -42,9 +42,12 @@ A single page web app that allows you to:
 * Caching
 * Angular
 
-* recently done: added authentication, updated API, updated readme, added angular directives
-* recently done: added mobile nav, added more responsiveness to pgs
-* recently done: added API routes for delete profile, update profile, post new picture, update picture, delete  picture, updated angular ajax requests
-* recently done: updated profile routes, templated and styled profile pg, updated edit and delete profile requests and routes, added upload picture form, request and route, added map with pins to home pg
-* recently done: styled profile pg, added map to profile, revised post profile route and success callback, added login/logout logic and route, fixed edit and delete profile routes, made header more responsive, edited db column constraints, fixed login route
-* recently done: changed home & profile styling, used angular file upload library with post upload to Amazon S3, wrote request to save pics to db, rewrote submit profile and edit profile requests and routes to accomodate library
+
+##Recently Done
+* added authentication, updated API, updated readme, added angular directives
+* added mobile nav, added more responsiveness to pgs
+* added API routes for delete profile, update profile, post new picture, update picture, delete  picture, updated angular ajax requests
+* updated profile routes, templated and styled profile pg, updated edit and delete profile requests and routes, added upload picture form, request and route, added map with pins to home pg
+* styled profile pg, added map to profile, revised post profile route and success callback, added login/logout logic and route, fixed edit and delete profile routes, made header more responsive, edited db column constraints, fixed login route
+* changed home & profile styling, used angular file upload library with post upload to Amazon S3, wrote request to save pics to db, rewrote submit profile and edit profile requests and routes to accomodate library
+* fixed bugs with logout, fixed map markers and positioning

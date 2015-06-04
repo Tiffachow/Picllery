@@ -58,13 +58,13 @@
                 <div>
                   <span><h2>RECENT</h2></span>
                   <div>
-                    <div ng-click="showPin(pic.location)" ng-repeat="pic in users.recent" class="pic"><img src="{{ pic.picture }}"></div><div class="pic"><img></div><div class="pic"><img></div><div class="pic"><img></div><div class="pic"><img></div><div class="pic"><img></div><div class="pic"><img></div>
+                    <div ng-click="setMarker(pic.location, map)" ng-repeat="pic in users.recent" class="pic"><img src="{{ pic.picture }}"></div>
                   </div>
                 </div>
                 <div>
                   <span><h2>POPULAR</h2></span>
                   <div>
-                    <div ng-click="showPin(pic.location)" ng-repeat="pic in users.popular" class="pic"><img src="{{ pic.picture }}"></div><div class="pic"><img></div><div class="pic"><img></div><div class="pic"><img></div><div class="pic"><img></div><div class="pic"><img></div><div class="pic"><img></div>
+                    <div ng-click="setMarker(pic.location, map)" ng-repeat="pic in users.popular" class="pic"><img src="{{ pic.picture }}"></div>
                   </div>
                 </div>
               </div>
@@ -108,15 +108,15 @@
                   </div>
                   <div id="no-pics" ng-if="user_pics == null"><span>User has no pics.</span></div>
                   <div id="all-pics-container">
-                    <div class="pics-container" id="all-pics">
-                      <div ng-if="!(user_pics == null)" class="pic"><a href="#picture"><img ng-click="displayPic(pic.picture, pic.location)" ng-repeat="pic in user_pics" src="{{ pic.picture }}"></a></div>
+                    <div class="pics-container" id="all-pics" ng-if="!(user_pics == null)">
+                      <div class="pic" ng-repeat="pic in user_pics"><a href="#picture"><img ng-click="displayPic(pic.picture, pic.location)" src="{{ pic.picture }}"></a></div>
                     </div>
                     <div id="pub-priv-container" ng-if="username == profile.username">
-                      <div class="pics-container" id="pub-pics">
-                        <div ng-if="!(user_pics == null)" class="pic"><a href="#picture"><img ng-click="displayPic(pic.picture, pic.location)" ng-repeat="pic in user_pics | filter: {private: 'f'}" src="{{ pic.picture }}"></a></div>
+                      <div class="pics-container" id="pub-pics" ng-if="!(user_pics == null)">
+                        <div class="pic" ng-repeat="pic in user_pics | filter: {private: 'f'}"><a href="#picture"><img ng-click="displayPic(pic.picture, pic.location)" src="{{ pic.picture }}"></a></div>
                       </div>
-                      <div ng-if="!(user_pics == null)" class="pics-container" id="priv-pics">
-                        <div class="pic"><a href="#picture"><img ng-click="displayPic(pic.picture, pic.location)" ng-repeat="pic in user_pics | filter: {private: 't'}" src="{{ pic.picture }}"></a></div>
+                      <div class="pics-container" id="priv-pics" ng-if="!(user_pics == null)">
+                        <div class="pic" ng-repeat="pic in user_pics | filter: {private: 't'}"><a href="#picture"><img ng-click="displayPic(pic.picture, pic.location)" src="{{ pic.picture }}"></a></div>
                       </div>
                     </div>
                   </div>
@@ -164,7 +164,7 @@
             <form id="create-prof-form">
               <div class="form-group">
                 <span class="error" id="username-taken">Username is taken, please try again! Usernames are case-insensitive.</span>
-                <label for="username">Username:</label><input class="form-control" value="{{ profile.username }}" id="new-username" name="username" type="text" placeholder="Enter Username" required><br>
+                <label for="username">Username:</label><input class="form-control" value="{{ profile.username }}" id="new-username" name="username" size="30" type="text" placeholder="Enter Username" required><br>
                 <label for="password">Password:</label><input class="form-control" id="new-password" name="password" type="password" placeholder="Enter New Password" required><br>
                 <span class="error" id="pass-mismatch">Passwords do not match, please try again!</span>
                 <label for="re-password">Password, Again:</label><input class="form-control" id="re-password" name="re-password" type="password" placeholder="Re-enter Password" required><br>
@@ -275,7 +275,7 @@
               $http.post("/api/picture/" + username, new_pic_data)
                 .success(function(data) {
                   console.log("Posted new pic for " + username);
-                  $scope.hideAllPgs;
+                  $scope.hideAllPgs();
                   $(".profile").show();
                 })
                 .error(function(data) {
@@ -304,7 +304,10 @@
         $scope.renderHome = function() {
           $scope.hideAllPgs();
           $(".home").show();
+          $scope.getHome();
+        };
 
+        $scope.getHome = function() {
           // when landing on the page, get all usernames and show them
           $http.get('/api/home')
             .success(function(data) {
@@ -315,7 +318,7 @@
               };
               var latlng = new google.maps.LatLng(40.712784, -74.005941);
               var mapOptions = {
-                zoom: 8,
+                zoom: 2,
                 center: latlng
               };
               $scope.map = new google.maps.Map(document.getElementById("map-canvas"), mapOptions);
@@ -324,15 +327,17 @@
                 popular: []
               };
               for (var i=0; i < $scope.users.recent.length; i++) {
+                $scope.getCoords($scope.users.recent[i].location);
                 marker.recent[i] = new google.maps.Marker({
                   map: $scope.map,
-                  position: $scope.users.recent[i].location
+                  position: $scope.myLatLng
                 });
               }
               for (var i=0; i < $scope.users.popular.length; i++) {
+                $scope.getCoords($scope.users.popular[i].location);
                 marker.popular[i] = new google.maps.Marker({
                   map: $scope.map,
-                  position: $scope.users.popular[i].location
+                  position: $scope.myLatLng
                 });
               }
               $scope.username = data.logged_in_as;
@@ -344,10 +349,6 @@
         };
 
         $scope.renderHome();
-
-        $scope.showPin = function(location) {
-          $scope.map.setCenter(location);
-        };
 
         $scope.renderLogin = function() {
           $scope.hideAllPgs();
@@ -396,6 +397,12 @@
           $http.get("/api/logout/")
           .success(function(data) {
             $scope.username = data.logged_in_as;
+            $scope.getHome();
+            $scope.getPics(username);
+            if ($(".upload").is(':visible')) {
+              $(".upload").hide();
+              $(".home").show();
+            }
           }).error(function(data) {
             console.log("Error: " + data);
           });
@@ -408,9 +415,10 @@
                 $scope.user_pics = data;
                 var marker = [];
                 for (var i=0; i < $scope.user_pics.length; i++) {
+                  $scope.getCoords($scope.user_pics[i].location);
                   marker[i] = new google.maps.Marker({
                     map: $scope.user_map,
-                    position: $scope.user_pics[i].location
+                    position: $scope.myLatLng
                   });
                 }
               }
@@ -425,12 +433,12 @@
         };
 
         // Create profile map and set center
-        $scope.latlng = new google.maps.LatLng(40.712784, -74.005941);
-        $scope.mapOptions = {
-          zoom: 8,
-          center: $scope.latlng
+        var latlng = new google.maps.LatLng(38.8833, 77.0167); // MURICAAAA
+        var mapOptions = {
+          zoom: 2,
+          center: latlng
         };
-        $scope.user_map = new google.maps.Map(document.getElementById("map-canvas-user"), $scope.mapOptions);
+        $scope.user_map = new google.maps.Map(document.getElementById("map-canvas-user"), mapOptions);
 
         $scope.renderCreateProfile = function() {
           $scope.hideAllPgs();
@@ -512,12 +520,27 @@
           $scope.getPics(selected_username);
         };
 
+        $scope.getCoords = function(location) {
+          var coords = location.split(",");
+          var lat = coords[0].split(":");
+          var lng1 = coords[1].split(":");
+          var lng2 = lng1[1].split("}");
+          $scope.myLatLng = new google.maps.LatLng(lat[1],lng2[0]);
+        };
+
+        $scope.setMarker = function(location, map) {
+          $scope.getCoords(location);
+          var marker = new google.maps.Marker({
+            map: map,
+            position: $scope.myLatLng
+          });
+          map.setCenter($scope.myLatLng);
+          map.setZoom(5);
+        };
+
         $scope.displayPic = function(picture, location) {
           $("#picture img").show().attr("src", picture);
-          var marker = new google.maps.Marker({
-            map: $scope.user_map,
-            position: location
-          });
+          $scope.setMarker(location, $scope.user_map);
         };
 
         $scope.renderEditProfile = function() {
