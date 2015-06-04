@@ -11,17 +11,18 @@
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/js/bootstrap.min.js"></script>
     <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.3.15/angular.min.js"></script>
     <script src="https://maps.googleapis.com/maps/api/js?v=3.exp&signed_in=true"></script>
+    <script src="/javascripts/ng-file-upload-all.min.js"></script>
     <script src="/javascripts/main.js"></script>
   </head>
   <body>
     <div ng-controller="mainController">
       <header>
-        <h1 id="title" ng-click="renderHome()"><span>Pic</span>llery</h1>
+        <h1 id="title" ng-click="renderHome()"><span id="one">Pic</span><span id="two">lle</span><span id="three">ry</span></h1>
         <nav>
           <div id="not-logged-in" ng-if="username == null">
             <div id="links">
               <h1 class="link" id="login" ng-click="renderLogin()">Login</h1>
-              <h1 class="link" id="create-prof">Create Profile</h1>
+              <h1 class="link" id="create-prof" ng-click="renderCreateProfile()">Create Profile</h1>
             </div>
           </div>
           <div id="logged-in" ng-if="!(username == null)">
@@ -40,7 +41,7 @@
       <!-- HOME PAGE -->
       <div class="container-fluid home page">
         <div class="row">
-          <aside class="section col-xs-12 col-sm-12 col-md-2 col-lg-2 pull-right">
+          <aside class="section col-xs-12 col-sm-12 col-md-2 col-lg-2 pull-right no-padding">
             <h2 id="user-title">USERS</h2>
             <nav class="users">
               <h1 class="user" ng-repeat="user in users.usernames" ng-click="viewProfile(user.username)">{{ user.username }}</h1>
@@ -102,7 +103,23 @@
             <div class="gallery col-xs-12 col-sm-12 col-md-12 col-lg-12 row no-padding">
               <div class="col-xs-12 col-sm-12 col-md-4 col-lg-4 no-padding" >
                 <div id="gallery"> <!-- GALLERY -->
-                  <div class="pic"><a href="#picture"><img ng-click="displayPic(pic.picture, pic.location)" ng-repeat="pic in user_pics" src="{{ pic.picture }}"></a></div>
+                  <div id="gallery-legend" ng-if="username == profile.username">
+                    <h2><a href="#all-pics">All</a></h2><h2><a href="#pub-pics">Public</a></h2><h2><a href="#priv-pics">Private</a></h2>
+                  </div>
+                  <div id="no-pics" ng-if="user_pics == null"><span>User has no pics.</span></div>
+                  <div id="all-pics-container">
+                    <div class="pics-container" id="all-pics">
+                      <div ng-if="!(user_pics == null)" class="pic"><a href="#picture"><img ng-click="displayPic(pic.picture, pic.location)" ng-repeat="pic in user_pics" src="{{ pic.picture }}"></a></div>
+                    </div>
+                    <div id="pub-priv-container" ng-if="username == profile.username">
+                      <div class="pics-container" id="pub-pics">
+                        <div ng-if="!(user_pics == null)" class="pic"><a href="#picture"><img ng-click="displayPic(pic.picture, pic.location)" ng-repeat="pic in user_pics | filter: {private: 'f'}" src="{{ pic.picture }}"></a></div>
+                      </div>
+                      <div ng-if="!(user_pics == null)" class="pics-container" id="priv-pics">
+                        <div class="pic"><a href="#picture"><img ng-click="displayPic(pic.picture, pic.location)" ng-repeat="pic in user_pics | filter: {private: 't'}" src="{{ pic.picture }}"></a></div>
+                      </div>
+                    </div>
+                  </div>
                 </div>
               </div>
               <div class="col-xs-12 col-sm-12 col-md-4 col-lg-4 no-padding">
@@ -146,42 +163,48 @@
           <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 center-container">
             <form id="create-prof-form">
               <div class="form-group">
-                <h2 class="error" id="username-taken">Username is taken, please try again! Usernames are case-insensitive.</h2>
-                <label for="username">Username:</label><input class="form-control" value="{{ profile.username }}" id="new-username" name="username" type="text" placeholder="Enter Username" autocomplete required><br>
-                <label for="password">Password:</label><input class="form-control" id="new-password" name="password" type="password" placeholder="Enter New Password" autocomplete required><br>
-                <h2 class="error" id="pass-mismatch">Passwords do not match, please try again!</h2>
-                <label for="re-password">Password, Again:</label><input class="form-control" id="re-password" name="re-password" type="password" placeholder="Re-enter Password" autocomplete required><br>
+                <span class="error" id="username-taken">Username is taken, please try again! Usernames are case-insensitive.</span>
+                <label for="username">Username:</label><input class="form-control" value="{{ profile.username }}" id="new-username" name="username" type="text" placeholder="Enter Username" required><br>
+                <label for="password">Password:</label><input class="form-control" id="new-password" name="password" type="password" placeholder="Enter New Password" required><br>
+                <span class="error" id="pass-mismatch">Passwords do not match, please try again!</span>
+                <label for="re-password">Password, Again:</label><input class="form-control" id="re-password" name="re-password" type="password" placeholder="Re-enter Password" required><br>
                 <div class="form-inline">
                   <label for="first-name">First Name:</label><input class="form-control" value="{{ profile.first_name }}" id="first-name" name="first-name" type="text" autocomplete required>
                   <label for="last-name">Last Name:</label><input class="form-control" value="{{ profile.last_name }}" id="last-name" name="last-name" type="text" autocomplete required>
                 </div>
-                <h2 class="error" id="email-taken">Email is already registered, please try again! Emails are case-insensitive.</h2>
+                <span class="error" id="email-taken">Email is already registered, please try again! Emails are case-insensitive.</span>
                 <label for="email">Email:</label><input class="form-control" value="{{ profile.email }}" id="email" name="email" type="email" placeholder="e.g. hello_there@gmail.com" autocomplete required><br>
-                <label for="prof-pic">Profile Picture:</label><input name="prof-pic" value="{{ profile.prof_pic }}" id="prof-pic" class="form-control" type="file" accept="image/*"><br>
+                <label for="prof-pic">Profile Picture:</label><!-- <input name="prof-pic" value="{{ profile.prof_pic }}" id="prof-pic" class="form-control" type="file" accept="image/*"> -->
+                <span>Min size: 10kb, Max Size: 2mb</span>
+                <input ng-model="picFile" required name="file" type="file" ngf-select ngf-capture="'camera'" accept="image/*" ngf-min-size='10000' ngf-max-size='2000000'><br>
+                <span class="preview-legend">Preview:</span><br><img ngf-src="picFile[0]" ngf-default-src="placeholder.jpg" ngf-accept="'image/*'" ngf-min-size='10000' ngf-max-size='2000000' class="preview"><br><br>
                 <label for="bio">Bio:</label><textarea class="form-control" value="{{ profile.bio }}" id="bio" name="bio" rows="4" placeholder="Tell us a little about yourself..."></textarea><br>
-                <button id="submit-prof" type="submit" ng-click="submitProfile()">Submit</button>
-                <button id="edit-prof" type="submit" ng-click="editProfile(username)">Submit</button>
+                <button id="submit-prof" type="submit" ng-click="submitProfile(picFile)">Submit</button>
+                <button id="edit-prof" type="submit" ng-click="editProfile(picFile, username, 'logged_in')">Submit</button>
               </div>
             </form>
           </div>
         </div>
       </div>
-    </div>
 
-    <!-- UPLOAD PICTURE PAGE -->
-    <div class="container-fluid upload page">
-      <div class="row">
-        <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 center-container">
-          <form id="upload-form">
-            <div class="form-group">
-              <label for="picture">Picture:</label><input name="picture" id="picture" class="form-control" type="file" accept="image/*" required><br>
-              <label for="location">Location (address):</label><input class="form-control" id="location" name="location" type="text" required><br>
-              <div class="form-inline">
-                <label>Private? <input class="form-control" id="private" name="private" type="checkbox" value="private"></label><br>
+      <!-- UPLOAD PICTURE PAGE -->
+      <div class="container-fluid upload page">
+        <div class="row">
+          <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 center-container">
+            <form id="upload-form">
+              <div class="form-group">
+                <label for="picture">Picture:</label><!-- <input name="picture" id="picture" class="form-control" type="file" accept="image/*" required> -->
+                <span>Min size: 10kb, Max Size: 2mb</span>
+                <input ng-model="picFile" required name="file" type="file" ngf-select ngf-capture="'camera'" accept="image/*" ngf-min-size='10000' ngf-max-size='2000000'><br>
+                <span class="preview-legend">Preview:</span><br><img ngf-src="picFile[0]" ngf-default-src="placeholder.jpg" ngf-accept="'image/*'" ngf-min-size='10000' ngf-max-size='2000000' class="preview"><br><br>
+                <label for="location">Location (address):</label><input class="form-control" id="location" name="location" type="text" required><br>
+                <div class="form-inline">
+                  <label for="private">Private? <input class="form-control" id="private" name="private" type="checkbox"></label><br>
+                </div>
+                <button type="submit" value="encode" ng-click="uploadPic(picFile,username)">Submit</button>
               </div>
-              <button type="submit" value="encode" ng-click="uploadPic(username)">Submit</button>
-            </div>
-          </form>
+            </form>
+          </div>
         </div>
       </div>
     </div>
@@ -190,8 +213,84 @@
       <p><small>Copyright &#169; 2015 Picllery. All rights reserved.</small></p>
     </div>
     <script>
-      var piclleryApp = angular.module("piclleryApp", [])
-      .controller("mainController", ['$scope', '$http', function($scope, $http) {
+      var piclleryApp = angular.module("piclleryApp", ['ngFileUpload'])
+      .controller("mainController", ['$scope', '$http', 'Upload', function($scope, $http, Upload) {
+
+        $scope.picFile;
+        $scope.policy = "ewogICJleHBpcmF0aW9uIjogIjIwMjUtMDEtMDFUMDA6MDA6MDBaIiwKICAiY29uZGl0aW9ucyI6IFsKICAgIHsiYnVja2V0IjogInBpY2xsZXJ5LXVzZXItaW1hZ2VzIn0sCiAgICBbInN0YXJ0cy13aXRoIiwgIiRrZXkiLCAiIl0sCiAgICB7ImFjbCI6ICJwdWJsaWMtcmVhZCJ9LAogICAgWyJzdGFydHMtd2l0aCIsICIkQ29udGVudC1UeXBlIiwgIiJdLAogICAgWyJzdGFydHMtd2l0aCIsICIkZmlsZW5hbWUiLCAiIl0sCiAgICBbImNvbnRlbnQtbGVuZ3RoLXJhbmdlIiwgMCwgNTI0Mjg4MDAwXQogIF0KfQ==";
+        $scope.signature = "G4CtuC9xOrWVumnNbMIUxkP5K0I=";
+
+        $scope.uploadPic = function (files, username, submitProfPic) {
+          if (files && files.length) {
+            for (var i = 0; i < files.length; i++) {
+              var file = files[i];
+              var identifier, filename;
+              var d = new Date();
+              var t = d.getTime();
+              identifier = username + "/" + t;
+              filename = identifier + "/" + file.name;
+              Upload.upload({
+                  url: 'https://picllery-user-images.s3.amazonaws.com/',
+                  method: 'POST',
+                  fields : {
+                    key: filename,
+                    AWSAccessKeyId: "AKIAIOGEX3T2DE2FRA4Q",
+                    acl: 'public-read',
+                    policy: $scope.policy,
+                    signature: $scope.signature,
+                    "Content-Type": file.type != '' ? file.type : 'application/octet-stream',
+                    filename: filename // this is needed for Flash polyfill IE8-9
+                  },
+                  file: file,
+              }).progress(function (evt) {
+                  var progressPercentage = parseInt(100.0 * evt.loaded / evt.total);
+                  console.log('progress: ' + progressPercentage + '% ' + evt.config.file.name);
+              }).success(function (data, status, headers, config) {
+                  console.log('file ' + config.file.name + ' uploaded. Response: ' + data);
+                  $scope.filename = filename;
+                  if (submitProfPic) {
+                    $scope.saveProfPicToDB(username);
+                  }
+                  else {
+                    $scope.savePicToDB(filename, username);
+                  }
+              });
+            }
+          }
+        };
+
+        // Post new pic for existing user
+        $scope.savePicToDB = function(filename, username) {
+          var address = $("#location").val();
+          var geocoder = new google.maps.Geocoder();
+          geocoder.geocode( {'address': address}, function(results, status) {
+            if (status == google.maps.GeocoderStatus.OK) {
+              var geolocation = results[0].geometry.location;
+              var new_pic_data = {
+                picture: "https://s3-us-west-2.amazonaws.com/picllery-user-images/" + filename,
+                location: geolocation,
+                private: $("#private").prop("checked")
+              };
+              console.log(new_pic_data.picture);
+              $http.post("/api/picture/" + username, new_pic_data)
+                .success(function(data) {
+                  console.log("Posted new pic for " + username);
+                  $scope.hideAllPgs;
+                  $(".profile").show();
+                })
+                .error(function(data) {
+                  console.log("Failed to post new pic... :( Error: " + error);
+                });
+            } else {
+              alert("Geocode was not successful for the following reason: " + status + ". Please try another address.");
+            }
+          });
+        };
+
+        // Post profile pic when creating new profile
+        $scope.saveProfPicToDB = function(username) {
+          $scope.editProfile('', username);
+        };
 
         $scope.hideAllPgs = function() {
           // A reset, of sorts
@@ -274,6 +373,7 @@
                     prof_pic: data.user.prof_pic,
                     bio: data.user.bio
                   };
+                  $scope.getPics(data.user.username);
                   $scope.username = data.logged_in_as;
                   console.log("Logged in as " + $scope.username);
                 }
@@ -316,6 +416,7 @@
               }
               else {
                 console.log("No (public) pics from user.");
+                $scope.user_pics = null;
               }
             })
             .error(function(data) {
@@ -331,7 +432,14 @@
         };
         $scope.user_map = new google.maps.Map(document.getElementById("map-canvas-user"), $scope.mapOptions);
 
-        $scope.submitProfile = function() {
+        $scope.renderCreateProfile = function() {
+          $scope.hideAllPgs();
+          $(".create-prof").show();
+          $("#edit-prof").hide();
+          $("#submit-prof").show();
+        };
+
+        $scope.submitProfile = function(picFile) {
           console.log("create profile form submitted");
           var password1 = $("#new-password").val();
           var password2 = $("#re-password").val();
@@ -343,7 +451,6 @@
               first_name: $("#first-name").val(),
               last_name: $("#last-name").val(),
               email: $("#email").val(),
-              prof_pic: $("#prof-pic").val(),
               bio: $("#bio").val()
             };
             $http.post("/api/register", prof_data)
@@ -359,6 +466,7 @@
                 else {
                   $scope.hideAllPgs();
                   $(".profile").show();
+                  $scope.uploadPic(picFile, data.user.username, 'true');
                   $scope.profile = {
                     username: data.user.username,
                     first_name: data.user.first_name,
@@ -420,17 +528,20 @@
           $("#new-username, #email").prop("disabled", true);
         };
 
-        $scope.editProfile = function(username) {
+        $scope.editProfile = function(picFile, username, logged_in) {
           console.log("update profile form submitted");
           var password1 = $("#new-password").val();
           var password2 = $("#re-password").val();
           if (password1 === password2) {
             $("#pass-mismatch").hide();
+            if (logged_in) {
+              $scope.uploadPic(picFile, username, 'false');
+            }
             var new_data = { // Can't change username or email
               password: $("#new-password").val(),
               first_name: $("#first-name").val(),
               last_name: $("#last-name").val(),
-              prof_pic: $("#prof-pic").val(),
+              prof_pic: "https://s3-us-west-2.amazonaws.com/picllery-user-images/" + $scope.filename,
               bio: $("#bio").val()
             };
             $http.put("/api/profile/" + username, new_data)
@@ -482,32 +593,6 @@
         $scope.renderUploadForm = function() {
           $scope.hideAllPgs();
           $(".upload").show();
-        };
-
-        $scope.uploadPic = function(username) {
-          var address = $("#location").val();
-          console.log(address);
-          var geocoder = new google.maps.Geocoder();
-          geocoder.geocode( { 'address': address}, function(results, status) {
-            if (status == google.maps.GeocoderStatus.OK) {
-              var location = results[0].geometry.location;
-              var new_pic_data = {
-                picture: $("#picture").val(),
-                location: location,
-                private: $("#private").val()
-              };
-              console.log($("#private").val());
-              $http.post("/api/picture/" + username, new_pic_data)
-                .success(function(data) {
-                  console.log("Posted new pic for " + username);
-                })
-                .error(function(data) {
-                  console.log("Failed to post new pic... :( Error: " + error);
-                });
-            } else {
-              alert("Geocode was not successful for the following reason: " + status + ". Please try another address.");
-            }
-          });
         };
       }]);
     </script>

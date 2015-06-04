@@ -2,9 +2,6 @@ $(function() {
 
   "use strict";
 
-  var pic_wid = $(".pic").width();
-  $(".pic").css({"height": pic_wid + "px"});
-
   $(".pic").hover(
     function() {
       $(this).css("opacity","0.7");
@@ -36,24 +33,6 @@ $(function() {
     $("aside").css("z-index","1");
   });
 
-  //============================
-  function hideAllPgs() {
-    $(".page").hide();
-    $("#picture img").hide();
-    $(".error").hide();
-    $("#picture img").hide();
-    $("#new-username, #email").prop("disabled", false);
-  }
+  var height = $("#picture img").height();
 
-  //============================
-
-  function renderCreateProfile() {
-    hideAllPgs();
-    $(".create-prof").show();
-    $("#edit-prof").hide();
-    $("#submit-prof").show();
-  }
-
-  //============================
-  $("#create-prof").click(renderCreateProfile);
 });

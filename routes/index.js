@@ -117,7 +117,7 @@ router.post('/api/login', function(req, res) {
 /* GET logout. */
 router.get('/api/logout/', function(req, res) {
   // End user session
-  delete req.session.user;
+  req.session.reset;
   return res.json({logged_in_as: null});
 });
 
@@ -131,7 +131,6 @@ router.post('/api/register', function(req, res) {
     first_name: req.body["first_name"],
     last_name: req.body["last_name"],
     email: req.body["email"],
-    prof_pic: req.body["prof_pic"],
     bio: req.body["bio"]
   };
   console.log(data);
@@ -145,8 +144,8 @@ router.post('/api/register', function(req, res) {
           if (result.rows.length == 0) {
             // SQL Query > Insert Data for New User
             client.query({
-              text: "INSERT INTO users(username, password, first_name, last_name, email, prof_pic, bio) values($1, $2, $3, $4, $5, $6, $7)",
-              values: [data.username, data.password, data.first_name, data.last_name, data.email, data.prof_pic, data.bio]
+              text: "INSERT INTO users(username, password, first_name, last_name, email, bio) values($1, $2, $3, $4, $5, $6)",
+              values: [data.username, data.password, data.first_name, data.last_name, data.email, data.bio]
             });
             // SQL Query > Select Data (except password) from New User
             var query = client.query("SELECT username, first_name, last_name, email, prof_pic, bio FROM users WHERE username = $1", [data.username], function(err, result){
@@ -306,7 +305,7 @@ router.delete('/api/profile/:username', function(req, res) {
 /* POST new picture. */
 router.post('/api/picture/:username', function(req, res) {
   var priv;
-  if (req.body["private"] == "checked") {
+  if (req.body["private"] == true) {
     priv = "t";
   }
   else {
@@ -322,13 +321,16 @@ router.post('/api/picture/:username', function(req, res) {
   pg.connect(conString, function(err, client, done) {
     // SQL Query > If Logged In,
     if (req.session && req.session.user && data.username === req.session.user.username) {
-      client.query("INSERT INTO pics(username, picture, location, likes, private) values($1, $2, $3, '0', $4)", [data.username, data.picture, data.location, data.private]);
+      query = client.query("INSERT INTO pics(username, picture, location, likes, private) values($1, $2, $3, '0', $4)", [data.username, data.picture, data.location, data.private]);
+      query.on('end', function() {
+        client.end();
+        return res.send("Uploaded new pic for " + data.username);
+      });
     }
     else {
-      return res.json({logged_in: false});
+      return res.json({not_logged_in: true});
     }
 
-    client.end();
     // Handle Errors for connection
     if(err) {
       console.log(err);
