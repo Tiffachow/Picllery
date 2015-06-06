@@ -449,7 +449,6 @@
           $(".page").hide();
           $(".profile").show();
           $("#picture img").show();
-          $("#likes, #edit-pic-button, #delete-pic-button, #toggle-hint").css("display","block");
         };
 
         $scope.viewProfileWithPic = function(picture, location, address, private, likes, id, username) {
@@ -580,7 +579,7 @@
         };
 
         $scope.renderEditPic = function() {
-          $scope.hideAllPgs();
+          $(".page").hide();
           $(".update-pic").show();
           $scope.isUpload = {upload: false};
         };
@@ -638,7 +637,7 @@
         };
 
         $scope.renderEditProfile = function() {
-          $scope.hideAllPgs();
+          $(".page").hide();
           $(".update-prof").show();
           $("#edit-prof").show();
           $("#submit-prof").hide();
@@ -670,17 +669,9 @@
                   console.log(err);
                 }
                 else {
-                  $scope.hideAllPgs();
-                  $(".profile").show();
                   $(".preview").attr("src",""); //reset
-                  $scope.profile = {
-                    username: data.username,
-                    first_name: data.first_name,
-                    last_name: data.last_name,
-                    email: data.email,
-                    prof_pic: data.prof_pic,
-                    bio: data.bio
-                  };
+                  $scope.progress = null;
+                  $scope.viewProfile(data.user);
                   console.log("Updated profile for " + data.username);
                 }
               })
@@ -752,6 +743,7 @@
               }).success(function (data, status, headers, config) {
                   console.log('file ' + config.file.name + ' uploaded. Response: ' + data);
                   $scope.filename = filename;
+                  $(".preview").attr("src",""); //reset
                   if (submitProfPic) {
                     $scope.postProfPic(username);
                   }

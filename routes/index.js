@@ -222,13 +222,10 @@ router.put('/api/profile/:username', function(req, res) {
             console.log(err);
             return res.json({err: err});
           }
-          else {
-            client.query("SELECT username, first_name, last_name, email, prof_pic, bio from users WHERE username = $1", [username], function(err, result){
-              var user = result.rows[0];
-              req.session.user = user;
-              return res.json(user);
-            });
-          }
+          client.end();
+          var user = {username: username};
+          req.session.user = user;
+          return res.json({user: user.username});
         });
       }
       else {
