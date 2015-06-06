@@ -93,7 +93,6 @@ router.post('/api/login', function(req, res) {
             // Setting a property will automatically cause a Set-Cookie response to be sent
             // Start user session
             req.session.user = user;
-            console.log(user);
             return res.json({user: user, logged_in_as: req.session.user.username});
           });
         });
@@ -133,7 +132,6 @@ router.post('/api/register', function(req, res) {
     email: req.body["email"],
     bio: req.body["bio"]
   };
-  console.log(data);
   // Get a Postgres client from the connection pool
   pg.connect(conString, function(err, client, done) {
     // Check if username exists, if not, check if email exists. Ensure that both are case insensitive.
@@ -186,7 +184,6 @@ router.post('/api/register', function(req, res) {
 /* GET profile. */
 router.get('/api/profile/:username', function(req, res) {
   var username = req.params["username"];
-  console.log(username);
   // Get a Postgres client from the connection pool
   pg.connect(conString, function(err, client, done) {
     // SQL Query > Select Data from User
@@ -222,6 +219,7 @@ router.put('/api/profile/:username', function(req, res) {
     prof_pic: req.body["prof_pic"],
     bio: req.body["bio"]
   };
+  console.log(data);
   // Get a Postgres client from the connection pool
   pg.connect(conString, function(err, client, done) {
     // Check if logged in
@@ -234,6 +232,7 @@ router.put('/api/profile/:username', function(req, res) {
         if (err) {
           // Handle errors for query
           console.log(err);
+          return res.json({err: err});
         }
         else {
           client.query("SELECT username, first_name, last_name, email, prof_pic, bio from users WHERE username = $1", [username], function(err, result){
@@ -315,13 +314,14 @@ router.post('/api/picture/:username', function(req, res) {
     username: req.params["username"],
     picture: req.body["picture"],
     location: req.body["location"],
+    address: req.body["address"],
     private: priv,
   };
   // Get a Postgres client from the connection pool
   pg.connect(conString, function(err, client, done) {
     // SQL Query > If Logged In,
     if (req.session && req.session.user && data.username === req.session.user.username) {
-      query = client.query("INSERT INTO pics(username, picture, location, likes, private) values($1, $2, $3, '0', $4)", [data.username, data.picture, data.location, data.private]);
+      var query = client.query("INSERT INTO pics(username, picture, location, address, likes, private) values($1, $2, $3, $4, '0', $5)", [data.username, data.picture, data.location, data.address, data.private]);
       query.on('end', function() {
         client.end();
         return res.send("Uploaded new pic for " + data.username);
@@ -403,15 +403,79 @@ router.get('/api/pictures/:username', function(req, res) {
 /* UPDATE picture. */
 router.put('/api/picture/:id', function(req, res) {
   var id = req.params["id"];
-  res.end();
+  var likes = req.body["likes"];
+  likes += 1;
+  // Get a Postgres client from the connection pool
+  pg.connect(conString, function(err, client, done) {
+    if (!(req.body["likes"] == null)) {
+      // Add Likes
+      var query = client.query("UPDATE pics SET likes = $1 WHERE id = $2", [likes, id]);
+      query.on('end', function() {
+        client.end();
+        return res.json({likes: likes});
+      });
+    }
+    else { // Update picture location and/or privacy
+      var priv;
+      if (req.body["private"] == true) {
+        priv = "t";
+      }
+      else {
+        priv = "f";
+      }
+      var data = {
+        location: req.body["location"],
+        address: req.body["address"],
+        private: priv,
+        username: req.body["username"]
+      };
+      // Check if user is logged in on right account
+      if (req.session && req.session.user && data.username === req.session.user.username) {
+        var query = client.query("UPDATE pics SET location = $1, address = $2, private = $3 WHERE id = $4", [data.location, data.address, data.private, id]);
+        query.on('end', function() {
+          client.end();
+          res.end();
+        });
+      }
+      else {
+        return res.json({not_logged_in: true, not_correct_user: true});
+      }
+    }
+
+    // Handle Errors for connection
+    if(err) {
+      console.log(err);
+    }
+  });
+  return;
 });
 
 // ================================================================================
 
 /* DELETE picture. */
-router.delete('/api/picture/:id', function(req, res) {
-  var id = req.params["id"];
-  res.end();
+router.delete('/api/picture/:username/:id', function(req, res) {
+  var data = {
+    username: req.params["username"],
+    id: req.params["id"]
+  };
+  pg.connect(conString, function(err, client, done) {
+    if (req.session && req.session.user && data.username === req.session.user.username) {
+      var query = client.query("DELETE FROM pics WHERE id = $1", [data.id]);
+      query.on('end', function() {
+        client.end();
+        res.end();
+      });
+    }
+    else {
+      return res.json({not_logged_in: true, not_correct_user: true});
+    }
+
+    // Handle Errors for connection
+    if(err) {
+      console.log(err);
+    }
+  });
+  return;
 });
 
 // ================================================================================

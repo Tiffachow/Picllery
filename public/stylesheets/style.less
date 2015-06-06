@@ -67,6 +67,11 @@ h2, .nav-links, .scroll, .error {
 p {
 	font: 400 20px/1em "Poiret One", Arial, sans-serif;
 	color: @orange;
+	text-shadow: 0 0 1px rgba(0,0,0,0.4);
+}
+
+.cur-p {
+	cursor: pointer;
 }
 
 // ========================== HEADER =================================
@@ -78,7 +83,7 @@ header {
 	height: @after-header;
 	background: #fff;
 	box-shadow: 0 2px 3px rgba(0,0,0,0.1);
-	z-index: 1;
+	z-index: 2;
 	nav {
 		position: fixed;
 		width: 38%;
@@ -111,9 +116,14 @@ header {
 		#links {
 			display: inline-block;
 			position: absolute;
-			text-align: left;
+			text-align: center;
 			right: 30%;
-			width: 140px;
+			width: 150px;
+		}
+		.link {
+			background: fade(@light-purple, 10%);
+			padding: 2px 5px;
+			border-radius: 10px;
 		}
 	}
 }
@@ -121,12 +131,14 @@ header {
 #title {
 	position: relative;
 	margin-top: 1%;
-	margin-left: 8%;
-	width: 400px;
+	padding-left: 8%;
+	width: 500px;
 	letter-spacing: 10px;
 	text-align: center;
 	text-shadow: 0 0 2px rgba(0,0,0,0.4);
 	cursor: pointer;
+	border-radius: 0 10px 10px 0;
+	background: fade(@light-purple, 10%);
 	#one {
 		-webkit-animation: title_color 1800ms linear infinite;
 		-moz-animation: title_color 1800ms linear infinite;
@@ -266,7 +278,7 @@ aside {
 	margin-left: 15px;
 	.inner-container {
 		border-radius: 10px 0 0 10px;
-		left: -2.75%;
+		left: -3%;
 		#map-canvas {
 			position: relative;
 			width: 100%;
@@ -281,7 +293,6 @@ aside {
 	height: ~"calc(100vh - "@after-header~" - 30px)";
 	.inner-container {
 		border-radius: 0 10px 10px 0;
-		left: -1.25%;
 		overflow-y: hidden;
 		> div {
 			position: relative;
@@ -296,6 +307,18 @@ aside {
 				width: 100%;
 				height: 100%;
 				overflow-y: scroll;
+				.thumb-click {
+					position: absolute;
+					padding-top: 60%;
+					height: 100%;
+					width: 100%;
+					text-align: center;
+					background: fade(#fff, 50%);
+				}
+				#pop-likes {
+					padding-top: 40%;
+					background: none;
+				}
 			}
 		}
 	}
@@ -306,7 +329,7 @@ aside {
 	background: #fff;
 	position: relative;
 	top: 2.5%;
-	width: 105%;
+	width: 103%;
 	border: 1px solid #fff;
 	height: 95%;
 	box-shadow: 0 0 15px rgba(0,0,0,0.4);
@@ -325,14 +348,15 @@ aside {
 		height: 100%;
 		vertical-align: top;
 		overflow: hidden;
-		transition: opacity 500ms ease-in-out;
+		background: fade(@orange, 50%);
 		img {
-			position: relative;
-			width: 200%;
-			left: -50%;
+			position: absolute;
+			width: 100%;
+			top: 0;
 			height: auto;
+			transition: opacity 200ms ease-in-out;
 			&:hover {
-				opacity: 80%;
+				opacity: 0.8;
 			}
 		}
 	}
@@ -411,6 +435,7 @@ button {
 	border-radius: 5px;
 	margin-top: 20px;
 	box-shadow: 0 0 5px rgba(0,0,0,0.4);
+	margin-bottom: 10px;
 	transition: background 300ms ease-in-out;
 	&:hover {
 		background: @dark-purple;
@@ -471,8 +496,8 @@ button {
 				border: 2px solid @dark-purple;
 				overflow: hidden;
 				img {
-					width: auto;
-					height: 100%;
+					width: 100%;
+					height: auto;
 				}
 			}
 			.details {
@@ -528,13 +553,15 @@ button {
 				width: 100%;
 				height: 100%;
 				overflow: hidden;
-				#gallery-legend, #no-pics {
+				#gallery-legend, .no-pics {
 					position: absolute;
 					bottom: 0;
 				}
-				#no-pics {
+				.no-pics {
 					text-align: center;
-					top: 50%;
+					padding-top: 50%;
+					font: 400 20px/1em "Poiret One", Arial, sans-serif;
+					background: fade(#fff, 20%);
 				}
 				div h2 {
 					position: relative;
@@ -543,7 +570,7 @@ button {
 					z-index: 1;
 					width: 100%/3;
 					text-align: center;
-					background: #fff;
+					background: fade(#fff, 80%);
 					transition: background 300ms ease-in-out, color 300ms ease-in-out;
 					&:hover {
 						background: fade(#fff, 20%);
@@ -578,15 +605,56 @@ button {
 			}
 			#picture {
 				background: @orange;
+				width: 100%;
+				height: 100%;
 				overflow-y: scroll;
 				cursor: move;
+				div {
+					position: absolute;
+					top: 0;
+					text-align: center;
+					padding-top: 50%;
+					font: 400 20px/1em "Poiret One", Arial, sans-serif;
+					background: fade(@light-purple, 20%);
+				}
 				img {
 					position: absolute;
+					top: 0;
 					width: 100%;
 					height: auto;
 				}
+				#likes {
+					padding-top: 0;
+					margin-top: 77%;
+					height: 22%;
+					background: fade(#fff, 80%);
+					button {
+						font-size: 20px;
+					}
+				}
+				#edit-pic-button, #delete-pic-button {
+					display: inline-block;
+					margin-top: 10px;
+					padding-top: 0;
+					padding-right: 10px;
+					width: 100px;
+					height: 24px;
+					line-height: 25px;
+					color: #fff;
+					background: fade(@light-purple, 50%);
+					cursor: pointer;
+					&:hover {
+						background: fade(@light-purple, 80%);
+					}
+				}
+				#delete-pic-button {
+					margin-top: 44px;
+				}
 			}
 			#map-canvas-user {
+				position: relative;
+				width: 100%;
+				height: 100%;
 				.gm-style * {
 				  width: auto;
 				  height: auto;
@@ -665,7 +733,10 @@ button {
 	}
 }
 
-@media all and (max-width: 995px) {
+@media all and (max-width: 990px) {
+	#title {
+		margin-top: 20px;
+	}
 	aside {
 		background: @light-purple;
 	}
@@ -708,6 +779,13 @@ button {
 				height: 80px;
 			}
 		}
+		.gallery {
+			#picture {
+				#likes {
+					margin-top: 50%;
+				}
+			}
+		}
 	}
 }
 
@@ -716,14 +794,17 @@ button {
 		font-size: 40px;
 		letter-spacing: 1px;
 		margin-top: 40px;
-		margin-left: -90px;
+		width: 200px;
 	}
 header nav {
 	#links {
-		margin-top: 50px;
-		text-align: right;
+		margin-top: 85px;
+		width: 120px;
 		h1 {
 			line-height: 1em;
+		}
+		.link {
+			margin: 5px 0;
 		}
 	}
 	#status {
@@ -731,6 +812,7 @@ header nav {
 		margin-top: 0;
 		margin-right: -160px;
 		p {
+			margin-top: 2px;
 			margin-bottom: 10px;
 		}
 	}

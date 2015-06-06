@@ -2,15 +2,6 @@ $(function() {
 
   "use strict";
 
-  $(".pic").hover(
-    function() {
-      $(this).css("opacity","0.7");
-    },
-    function() {
-      $(this).css("opacity","1");
-    }
-  );
-
   $(".mobile > ul > li").click(alternateOpen);
   function alternateOpen() {
     $(".mobile").css("transform","translateX(0)");

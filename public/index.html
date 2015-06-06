@@ -19,19 +19,19 @@
       <header>
         <h1 id="title" ng-click="renderHome()"><span id="one">Pic</span><span id="two">lle</span><span id="three">ry</span></h1>
         <nav>
-          <div id="not-logged-in" ng-if="username == null">
+          <div id="not-logged-in" ng-if="logged_in.username == null">
             <div id="links">
               <h1 class="link" id="login" ng-click="renderLogin()">Login</h1>
               <h1 class="link" id="create-prof" ng-click="renderCreateProfile()">Create Profile</h1>
             </div>
           </div>
-          <div id="logged-in" ng-if="!(username == null)">
+          <div id="logged-in" ng-if="!(logged_in.username == null)">
             <div id="status">
-              <p>Logged in as <strong>{{ username }}</strong>.</p>
-              <p id="logout" ng-click="logout(username)"><strong>Logout</strong></p>
+              <p>Logged in as <strong>{{ logged_in.username }}</strong>.</p>
+              <p id="logout" ng-click="logout(logged_in.username)"><strong>Logout</strong></p>
             </div>
             <div id="links">
-              <h1 class="link" id="view-prof" ng-click="viewProfile(username)">View Profile</h1>
+              <h1 class="link" id="view-prof" ng-click="viewProfile(logged_in.username)">View Profile</h1>
               <h1 class="link" id="upload" ng-click="renderUploadForm()">Upload Picture</h1>
             </div>
           </div>
@@ -58,13 +58,22 @@
                 <div>
                   <span><h2>RECENT</h2></span>
                   <div>
-                    <div ng-click="setMarker(pic.location, map)" ng-repeat="pic in users.recent" class="pic"><img src="{{ pic.picture }}"></div>
+                    <div ng-click="setMarker(pic.location, map)" ng-repeat="pic in users.recent" class="pic">
+                      <img src="{{ pic.picture }}" ng-click="showLikesAndLink(pic.id)">
+                      <div ng-if="thumb_clicked == pic.id" class="thumb-click" ng-click="viewProfileWithPic(pic.picture, pic.location, pic.address, pic.private, pic.likes, pic.id, pic.username)"><p>Click here to view</p></div>
+                    </div>
                   </div>
                 </div>
                 <div>
                   <span><h2>POPULAR</h2></span>
                   <div>
-                    <div ng-click="setMarker(pic.location, map)" ng-repeat="pic in users.popular" class="pic"><img src="{{ pic.picture }}"></div>
+                    <div ng-click="setMarker(pic.location, map)" ng-repeat="pic in users.popular" class="pic">
+                      <img src="{{ pic.picture }}" ng-click="showLikesAndLink(pic.id)">
+                      <div ng-if="thumb_clicked == pic.id" class="thumb-click" ng-click="viewProfileWithPic(pic.picture, pic.location, pic.address, pic.private, pic.likes, pic.id, pic.username)"><p>Click here to view</p></div>
+                      <div ng-if="thumb_clicked == pic.id" id="pop-likes" class="thumb-click"><p>
+                        <span>{{ pic.likes }} </span>Like<span ng-if="pic.likes == 0 || pic.likes > 1">s</span>
+                      </p></div>
+                    </div>
                   </div>
                 </div>
               </div>
@@ -95,35 +104,43 @@
                 <h2><span>Email:</span> {{ profile.email }}</h2>
                 <h2><span>Bio:</span><div>{{ profile.bio }}</div></h2>
               </div>
-              <div class="prof-options" ng-if="username == profile.username">
+              <div class="prof-options" ng-if="logged_in.username == profile.username">
                 <p id="edit" ng-click="renderEditProfile()">Edit</p>
-                <p id="delete" ng-click="deleteProfile(username)">Delete</p>
+                <p id="delete" ng-click="deleteProfile(logged_in.username)">Delete</p>
               </div>
             </div>
             <div class="gallery col-xs-12 col-sm-12 col-md-12 col-lg-12 row no-padding">
               <div class="col-xs-12 col-sm-12 col-md-4 col-lg-4 no-padding" >
                 <div id="gallery"> <!-- GALLERY -->
-                  <div id="gallery-legend" ng-if="username == profile.username">
+                  <div id="gallery-legend" ng-if="logged_in.username == profile.username">
                     <h2><a href="#all-pics">All</a></h2><h2><a href="#pub-pics">Public</a></h2><h2><a href="#priv-pics">Private</a></h2>
                   </div>
-                  <div id="no-pics" ng-if="user_pics == null"><span>User has no pics.</span></div>
+                  <div class="no-pics" ng-if="user_pics == null"><span>User has no pics.</span></div>
                   <div id="all-pics-container">
                     <div class="pics-container" id="all-pics" ng-if="!(user_pics == null)">
-                      <div class="pic" ng-repeat="pic in user_pics"><a href="#picture"><img ng-click="displayPic(pic.picture, pic.location)" src="{{ pic.picture }}"></a></div>
+                      <div class="pic" ng-repeat="pic in user_pics" ng-click="displayPic(pic.picture, pic.location, pic.address, pic.private, pic.likes, pic.id, pic.username)"><a href="#picture"><img src="{{ pic.picture }}"></a></div>
                     </div>
-                    <div id="pub-priv-container" ng-if="username == profile.username">
+                    <div id="pub-priv-container" ng-if="logged_in.username == profile.username">
                       <div class="pics-container" id="pub-pics" ng-if="!(user_pics == null)">
-                        <div class="pic" ng-repeat="pic in user_pics | filter: {private: 'f'}"><a href="#picture"><img ng-click="displayPic(pic.picture, pic.location)" src="{{ pic.picture }}"></a></div>
+                        <div class="pic" ng-repeat="pic in user_pics | filter: {private: 'f'}" ng-click="displayPic(pic.picture, pic.location, pic.address, pic.private, pic.likes, pic.id, pic.username)"><a href="#picture"><img src="{{ pic.picture }}"></a></div>
                       </div>
                       <div class="pics-container" id="priv-pics" ng-if="!(user_pics == null)">
-                        <div class="pic" ng-repeat="pic in user_pics | filter: {private: 't'}"><a href="#picture"><img ng-click="displayPic(pic.picture, pic.location)" src="{{ pic.picture }}"></a></div>
+                        <div class="pic" ng-repeat="pic in user_pics | filter: {private: 't'}" ng-click="displayPic(pic.picture, pic.location, pic.address, pic.private, pic.likes, pic.id, pic.username)"><a href="#picture"><img src="{{ pic.picture }}"></a></div>
                       </div>
                     </div>
                   </div>
                 </div>
               </div>
               <div class="col-xs-12 col-sm-12 col-md-4 col-lg-4 no-padding">
-                <div id="picture"><img></div> <!-- PICTURE -->
+                <div id="picture">
+                  <div>Click an image in the gallery.</div>
+                  <img> <!-- PICTURE -->
+                  <div id="edit-pic-button" ng-if="current_pic_user == logged_in.username" ng-click="renderEditPic()">Edit</div>
+                  <div id="delete-pic-button" ng-if="current_pic_user == logged_in.username" ng-click="deletePic()">Delete</div>
+                  <div id="likes">
+                    <span id="count"></span> Likes. <button ng-click="addLikes(current_pic_id, current_pic_likes, current_pic_user)">Click here to like.</button>
+                  </div>
+                </div>
               </div>
               <div class="col-xs-12 col-sm-12 col-md-4 col-lg-4 no-padding">
                 <div><!-- MAP -->
@@ -157,7 +174,7 @@
         </div>
       </div>
 
-      <!-- CREATE PROFILE PAGE -->
+      <!-- CREATE/UPDATE PROFILE PAGE -->
       <div class="container-fluid create-prof update-prof page">
         <div class="row">
           <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 center-container">
@@ -174,34 +191,47 @@
                 </div>
                 <span class="error" id="email-taken">Email is already registered, please try again! Emails are case-insensitive.</span>
                 <label for="email">Email:</label><input class="form-control" value="{{ profile.email }}" id="email" name="email" type="email" placeholder="e.g. hello_there@gmail.com" autocomplete required><br>
-                <label for="prof-pic">Profile Picture:</label><!-- <input name="prof-pic" value="{{ profile.prof_pic }}" id="prof-pic" class="form-control" type="file" accept="image/*"> -->
-                <span>Min size: 10kb, Max Size: 2mb</span>
-                <input ng-model="picFile" required name="file" type="file" ngf-select ngf-capture="'camera'" accept="image/*" ngf-min-size='10000' ngf-max-size='2000000'><br>
-                <span class="preview-legend">Preview:</span><br><img ngf-src="picFile[0]" ngf-default-src="placeholder.jpg" ngf-accept="'image/*'" ngf-min-size='10000' ngf-max-size='2000000' class="preview"><br><br>
+                <label for="prof-pic">Profile Picture:</label>
+                <span>Min size: 10KB, Max Size: 5MB. Keep file name short, please.</span>
+                <input ng-model="file.picFile" required name="file" type="file" ngf-select ngf-capture="'camera'" accept="image/*" ngf-min-size='10000' ngf-max-size='5000000'><br>
+                <span class="preview-legend">Preview:</span><br><img ngf-src="file.picFile[0]" ngf-accept="'image/*'" ngf-min-size='10000' ngf-max-size='5000000' class="preview"><br><br>
                 <label for="bio">Bio:</label><textarea class="form-control" value="{{ profile.bio }}" id="bio" name="bio" rows="4" placeholder="Tell us a little about yourself..."></textarea><br>
-                <button id="submit-prof" type="submit" ng-click="submitProfile(picFile)">Submit</button>
-                <button id="edit-prof" type="submit" ng-click="editProfile(picFile, username, 'logged_in')">Submit</button>
+                <button id="submit-prof" type="submit" ng-click="submitProfile(file.picFile)">Submit</button>
+                <button id="edit-prof" type="submit" ng-click="editProfile(file.picFile, logged_in.username, 'logged_in')">Submit</button>
+                <span ng-if="progress"><p>UPLOADING IN PROGRESS... {{ progress }}</p></span>
+                <span class="cur-p" ng-click="showUnfreshProfile()"><p>Cancel</p></span>
               </div>
             </form>
           </div>
         </div>
       </div>
 
-      <!-- UPLOAD PICTURE PAGE -->
-      <div class="container-fluid upload page">
+      <!-- UPLOAD/EDIT PICTURE PAGE -->
+      <div class="container-fluid upload update-pic page">
         <div class="row">
           <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 center-container">
             <form id="upload-form">
               <div class="form-group">
-                <label for="picture">Picture:</label><!-- <input name="picture" id="picture" class="form-control" type="file" accept="image/*" required> -->
-                <span>Min size: 10kb, Max Size: 2mb</span>
-                <input ng-model="picFile" required name="file" type="file" ngf-select ngf-capture="'camera'" accept="image/*" ngf-min-size='10000' ngf-max-size='2000000'><br>
-                <span class="preview-legend">Preview:</span><br><img ngf-src="picFile[0]" ngf-default-src="placeholder.jpg" ngf-accept="'image/*'" ngf-min-size='10000' ngf-max-size='2000000' class="preview"><br><br>
-                <label for="location">Location (address):</label><input class="form-control" id="location" name="location" type="text" required><br>
-                <div class="form-inline">
-                  <label for="private">Private? <input class="form-control" id="private" name="private" type="checkbox"></label><br>
+                <div ng-if="isUpload.upload">
+                  <label for="picture">Picture:</label>
+                  <span>Min size: 10KB, Max Size: 5MB. Keep file name short, please.</span>
+                  <input ng-model="file.picFile" required name="file" type="file" ngf-select ngf-capture="'camera'" accept="image/*" ngf-min-size='10000' ngf-max-size='5000000'><br>
+                  <span class="preview-legend">Preview:</span><br>
+                  <img ngf-src="file.picFile[0]" ngf-accept="'image/*'" ngf-min-size='10000' ngf-max-size='5000000' class="preview"><br><br>
                 </div>
-                <button type="submit" value="encode" ng-click="uploadPic(picFile,username)">Submit</button>
+                <label for="location">Location (address):</label>
+                <input ng-if="isUpload.upload" class="form-control" id="location" name="location" type="text" required>
+                <input ng-if="!isUpload.upload" class="form-control" id="location" name="location" type="text" value="{{ reverse_geocode_location }}" required><br>
+                <div class="form-inline">
+                  <label for="private">Private?
+                    <input ng-if="isUpload.upload" class="form-control" id="private" name="private" type="checkbox">
+                    <input ng-if="!isUpload.upload" class="form-control" id="private" name="private" value="{{ current_pic_private }}" type="checkbox">
+                  </label><br>
+                </div>
+                <button ng-if="isUpload.upload" type="submit" value="encode" ng-click="uploadPic(file.picFile,logged_in.username)">Submit</button>
+                <button ng-if="!isUpload.upload" type="submit" value="encode" ng-click="updatePic()">Submit</button>
+                <span ng-if="progress && isUpload.upload"><p>UPLOADING IN PROGRESS... {{ progress }}</p></span>
+                <span class="cur-p" ng-click="showUnfreshProfile()"><p>Cancel</p></span>
               </div>
             </form>
           </div>
@@ -216,89 +246,16 @@
       var piclleryApp = angular.module("piclleryApp", ['ngFileUpload'])
       .controller("mainController", ['$scope', '$http', 'Upload', function($scope, $http, Upload) {
 
-        $scope.picFile;
-        $scope.policy = "ewogICJleHBpcmF0aW9uIjogIjIwMjUtMDEtMDFUMDA6MDA6MDBaIiwKICAiY29uZGl0aW9ucyI6IFsKICAgIHsiYnVja2V0IjogInBpY2xsZXJ5LXVzZXItaW1hZ2VzIn0sCiAgICBbInN0YXJ0cy13aXRoIiwgIiRrZXkiLCAiIl0sCiAgICB7ImFjbCI6ICJwdWJsaWMtcmVhZCJ9LAogICAgWyJzdGFydHMtd2l0aCIsICIkQ29udGVudC1UeXBlIiwgIiJdLAogICAgWyJzdGFydHMtd2l0aCIsICIkZmlsZW5hbWUiLCAiIl0sCiAgICBbImNvbnRlbnQtbGVuZ3RoLXJhbmdlIiwgMCwgNTI0Mjg4MDAwXQogIF0KfQ==";
-        $scope.signature = "G4CtuC9xOrWVumnNbMIUxkP5K0I=";
-
-        $scope.uploadPic = function (files, username, submitProfPic) {
-          if (files && files.length) {
-            for (var i = 0; i < files.length; i++) {
-              var file = files[i];
-              var identifier, filename;
-              var d = new Date();
-              var t = d.getTime();
-              identifier = username + "/" + t;
-              filename = identifier + "/" + file.name;
-              Upload.upload({
-                  url: 'https://picllery-user-images.s3.amazonaws.com/',
-                  method: 'POST',
-                  fields : {
-                    key: filename,
-                    AWSAccessKeyId: "AKIAIOGEX3T2DE2FRA4Q",
-                    acl: 'public-read',
-                    policy: $scope.policy,
-                    signature: $scope.signature,
-                    "Content-Type": file.type != '' ? file.type : 'application/octet-stream',
-                    filename: filename // this is needed for Flash polyfill IE8-9
-                  },
-                  file: file,
-              }).progress(function (evt) {
-                  var progressPercentage = parseInt(100.0 * evt.loaded / evt.total);
-                  console.log('progress: ' + progressPercentage + '% ' + evt.config.file.name);
-              }).success(function (data, status, headers, config) {
-                  console.log('file ' + config.file.name + ' uploaded. Response: ' + data);
-                  $scope.filename = filename;
-                  if (submitProfPic) {
-                    $scope.saveProfPicToDB(username);
-                  }
-                  else {
-                    $scope.savePicToDB(filename, username);
-                  }
-              });
-            }
-          }
-        };
-
-        // Post new pic for existing user
-        $scope.savePicToDB = function(filename, username) {
-          var address = $("#location").val();
-          var geocoder = new google.maps.Geocoder();
-          geocoder.geocode( {'address': address}, function(results, status) {
-            if (status == google.maps.GeocoderStatus.OK) {
-              var geolocation = results[0].geometry.location;
-              var new_pic_data = {
-                picture: "https://s3-us-west-2.amazonaws.com/picllery-user-images/" + filename,
-                location: geolocation,
-                private: $("#private").prop("checked")
-              };
-              console.log(new_pic_data.picture);
-              $http.post("/api/picture/" + username, new_pic_data)
-                .success(function(data) {
-                  console.log("Posted new pic for " + username);
-                  $scope.hideAllPgs();
-                  $(".profile").show();
-                })
-                .error(function(data) {
-                  console.log("Failed to post new pic... :( Error: " + error);
-                });
-            } else {
-              alert("Geocode was not successful for the following reason: " + status + ". Please try another address.");
-            }
-          });
-        };
-
-        // Post profile pic when creating new profile
-        $scope.saveProfPicToDB = function(username) {
-          $scope.editProfile('', username);
-        };
+        $scope.logged_in = {username: null};
 
         $scope.hideAllPgs = function() {
           // A reset, of sorts
           $(".page").hide();
           $("#picture img").hide();
           $(".error").hide();
-          $("#picture img").hide();
+          $("#likes, #edit-pic-button, #delete-pic-button").css("display","none");
           $("#new-username, #email").prop("disabled", false);
+          $scope.thumb_clicked = null;
         };
 
         $scope.renderHome = function() {
@@ -316,9 +273,9 @@
                 recent: data.recent,
                 popular: data.popular
               };
-              var latlng = new google.maps.LatLng(40.712784, -74.005941);
+              var latlng = new google.maps.LatLng(1.0000, 1.0000); // Center of world map
               var mapOptions = {
-                zoom: 2,
+                zoom: 1,
                 center: latlng
               };
               $scope.map = new google.maps.Map(document.getElementById("map-canvas"), mapOptions);
@@ -340,7 +297,7 @@
                   position: $scope.myLatLng
                 });
               }
-              $scope.username = data.logged_in_as;
+              $scope.logged_in.username = data.logged_in_as;
               console.log(data);
             })
             .error(function(data) {
@@ -375,8 +332,8 @@
                     bio: data.user.bio
                   };
                   $scope.getPics(data.user.username);
-                  $scope.username = data.logged_in_as;
-                  console.log("Logged in as " + $scope.username);
+                  $scope.logged_in.username = data.logged_in_as;
+                  console.log("Logged in as " + $scope.logged_in.username);
                 }
                 else {
                   $("#password-error").show();
@@ -396,11 +353,19 @@
         $scope.logout = function(username) {
           $http.get("/api/logout/")
           .success(function(data) {
-            $scope.username = data.logged_in_as;
-            $scope.getHome();
-            $scope.getPics(username);
-            if ($(".upload").is(':visible')) {
+            // Reset stuff!
+            $scope.logged_in.username = data.logged_in_as;
+            if ($(".home").is(':visible')) {
+              $scope.getHome();
+            }
+            if ($(".profile").is(':visible')) {
+              $scope.getPics(username);
+              $scope.getMap();
+              $("#picture img").hide();
+            }
+            if ($(".upload").is(':visible') || $(".update-prof").is(':visible')) {
               $(".upload").hide();
+              $(".update-prof").hide();
               $(".home").show();
             }
           }).error(function(data) {
@@ -431,14 +396,6 @@
               console.log('Error: ' + data);
             });
         };
-
-        // Create profile map and set center
-        var latlng = new google.maps.LatLng(38.8833, 77.0167); // MURICAAAA
-        var mapOptions = {
-          zoom: 2,
-          center: latlng
-        };
-        $scope.user_map = new google.maps.Map(document.getElementById("map-canvas-user"), mapOptions);
 
         $scope.renderCreateProfile = function() {
           $scope.hideAllPgs();
@@ -483,7 +440,7 @@
                     prof_pic: data.user.prof_pic,
                     bio: data.user.bio
                   };
-                  $scope.username = data.logged_in_as;
+                  $scope.logged_in.username = data.logged_in_as;
                   console.log("Registered and created new profile for " + data.user.username);
                   $scope.getPics(data.user.username);
                 }
@@ -498,9 +455,19 @@
           }
         };
 
-        $scope.viewProfile = function(username) {
+        $scope.showUnfreshProfile = function() {
           $scope.hideAllPgs();
           $(".profile").show();
+          $scope.getMap();
+        };
+
+        $scope.viewProfileWithPic = function(picture, location, address, private, likes, id, username) {
+          $scope.viewProfile(username);
+          $scope.displayPic(picture, location, address, private, likes, id, username);
+        };
+
+        $scope.viewProfile = function(username) {
+          $scope.showUnfreshProfile();
           var selected_username = username;
           $http.get('/api/profile/' + selected_username)
             .success(function(data) {
@@ -520,6 +487,16 @@
           $scope.getPics(selected_username);
         };
 
+        $scope.getMap = function() {
+          // Create profile map and set center
+          var latlng = new google.maps.LatLng(1.0000, 1.0000);
+          var mapOptions = {
+            zoom: 1,
+            center: latlng
+          };
+          $scope.user_map = new google.maps.Map(document.getElementById("map-canvas-user"), mapOptions);
+        };
+
         $scope.getCoords = function(location) {
           var coords = location.split(",");
           var lat = coords[0].split(":");
@@ -535,12 +512,116 @@
             position: $scope.myLatLng
           });
           map.setCenter($scope.myLatLng);
-          map.setZoom(5);
+          map.setZoom(10);
+          // for mobile home:
+          $(".section").css("z-index","0");
+          $("#map-all").css("z-index","1");
         };
 
-        $scope.displayPic = function(picture, location) {
+        $scope.showLikesAndLink = function(id) {
+          $scope.thumb_clicked = id;
+        };
+
+        $scope.displayPic = function(picture, location, address, priv, likes, id, username) {
           $("#picture img").show().attr("src", picture);
+          $("#likes, #edit-pic-button, #delete-pic-button").css("display","block");
+          $("#count").html(likes);
+          $scope.current_pic_id = id;
+          $scope.current_pic_likes = likes;
+          $scope.current_pic_user = username;
+          if (priv = 't') {
+            priv = true;
+          } else {
+            priv = false;
+          }
+          $scope.current_pic_private = priv;
           $scope.setMarker(location, $scope.user_map);
+          // TOO SPECIFIC RESULTS FOR IF USER ENTERED A VAGUE ADDRESS WHEN POSTING NEW PIC
+          // $scope.getCoords(location);
+          // $scope.geocoder.geocode({'latLng': $scope.myLatLng}, function(results, status) {
+          //   if (status == google.maps.GeocoderStatus.OK) {
+          //     if (results[0]) {
+          //       $scope.reverse_geocode_location = results[0].formatted_address;
+          //     } else {
+          //       $scope.reverse_geocode_location = null;
+          //     }
+          //   } else {
+          //     alert('Geocoder failed due to: ' + status);
+          //   }
+          // });
+          // ALTERNATIVE: Return user's input-ed address as is.
+          $scope.reverse_geocode_location = address;
+        };
+
+        $scope.addLikes = function(id, likes, username) { // Can only like once
+          var data = {
+            likes: likes
+          };
+          $http.put("/api/picture/" + id, data)
+            .success(function(data) {
+              $scope.getPics(username);
+              $("#count").html(data.likes);
+              console.log("Like added to pic with id " + id);
+            })
+            .error(function(data) {
+              console.log("Error: " + data);
+            });
+        };
+
+        $scope.renderEditPic = function() {
+          $scope.hideAllPgs();
+          $(".update-pic").show();
+          $scope.isUpload = {upload: false};
+        };
+
+        $scope.updatePic = function() {
+          var address = $("#location").val();
+          $scope.geocoder.geocode( {'address': address}, function(results, status) {
+            if (status == google.maps.GeocoderStatus.OK) {
+              var geolocation = results[0].geometry.location;
+              var new_pic_data = {
+                location: geolocation,
+                address: address,
+                private: $("#private").prop("checked"),
+                username: $scope.current_pic_user
+              };
+              $http.put("/api/picture/" + $scope.current_pic_id, new_pic_data)
+                .success(function(data) {
+                  if (data.not_logged_in || data.not_correct_user) {
+                    console.log("Not logged in or authorised to edit picture.");
+                  }
+                  else {
+                    console.log("Details updated for picture: " + $scope.filename);
+                    $scope.hideAllPgs();
+                    $(".profile").show();
+                    $scope.viewProfile(new_pic_data.username);
+                  }
+                })
+                .error(function(data) {
+                  console.log("Failed to update pic... :( Error: " + error);
+                });
+            } else {
+              alert("Geocode was not successful for the following reason: " + status + ". Please try another address.");
+            }
+          });
+        };
+
+        $scope.deletePic = function() {
+          $http.delete("/api/picture/" + $scope.current_pic_user + "/" + $scope.current_pic_id)
+            .success(function(data) {
+              if (data.not_logged_in || data.not_correct_user) {
+                console.log("Not logged in or authorised to edit picture.");
+              }
+              else {
+                console.log("Deleted pic with id: " + $scope.current_pic_id + " for user " + $scope.current_pic_user);
+                $scope.hideAllPgs();
+                $(".profile").show();
+                $scope.viewProfile($scope.current_pic_user);
+              }
+            })
+            .error(function(data) {
+              console.log("Error deleting pic: " + data);
+            });
         };
 
         $scope.renderEditProfile = function() {
@@ -571,6 +652,9 @@
               .success(function(data) {
                 if (data.not_logged_in) {
                   console.log("Unauthorised to edit profile. Please log in.")
+                }
+                else if (data.err) {
+                  console.log(err);
                 }
                 else {
                   $scope.hideAllPgs();
@@ -604,7 +688,7 @@
               }
               else {
                 console.log("Deleted profile for: " + username);
-                $scope.username = data.logged_in_as;
+                $scope.logged_in.username = data.logged_in_as;
                 $scope.renderHome();
               }
             })
@@ -616,6 +700,88 @@
         $scope.renderUploadForm = function() {
           $scope.hideAllPgs();
           $(".upload").show();
+          $scope.isUpload = {upload: true};
+          $scope.progress = null;
+          $scope.file = {picFile: null};
+        };
+
+        $scope.file = {picFile: null};
+        $scope.policy = "ewogICJleHBpcmF0aW9uIjogIjIwMjUtMDEtMDFUMDA6MDA6MDBaIiwKICAiY29uZGl0aW9ucyI6IFsKICAgIHsiYnVja2V0IjogInBpY2xsZXJ5LXVzZXItaW1hZ2VzIn0sCiAgICBbInN0YXJ0cy13aXRoIiwgIiRrZXkiLCAiIl0sCiAgICB7ImFjbCI6ICJwdWJsaWMtcmVhZCJ9LAogICAgWyJzdGFydHMtd2l0aCIsICIkQ29udGVudC1UeXBlIiwgIiJdLAogICAgWyJzdGFydHMtd2l0aCIsICIkZmlsZW5hbWUiLCAiIl0sCiAgICBbImNvbnRlbnQtbGVuZ3RoLXJhbmdlIiwgMCwgNTI0Mjg4MDAwXQogIF0KfQ==";
+        $scope.signature = "G4CtuC9xOrWVumnNbMIUxkP5K0I=";
+
+        $scope.uploadPic = function (files, username, submitProfPic) {
+          if (files && files.length) {
+            for (var i = 0; i < files.length; i++) {
+              var file = files[i];
+              var identifier, filename;
+              var d = new Date();
+              var t = d.getTime();
+              identifier = username + "/" + t;
+              filename = identifier + "/" + file.name;
+              Upload.upload({
+                  url: 'https://picllery-user-images.s3.amazonaws.com/',
+                  method: 'POST',
+                  fields : {
+                    key: filename,
+                    AWSAccessKeyId: "AKIAIOGEX3T2DE2FRA4Q",
+                    acl: 'public-read',
+                    policy: $scope.policy,
+                    signature: $scope.signature,
+                    "Content-Type": file.type != '' ? file.type : 'application/octet-stream',
+                    filename: filename // this is needed for Flash polyfill IE8-9
+                  },
+                  file: file,
+              }).progress(function (evt) {
+                  var progressPercentage = parseInt(100.0 * evt.loaded / evt.total);
+                  $scope.progress = progressPercentage + '% ' + evt.config.file.name;
+                  console.log('progress: ' + progressPercentage + '% ' + evt.config.file.name);
+              }).success(function (data, status, headers, config) {
+                  console.log('file ' + config.file.name + ' uploaded. Response: ' + data);
+                  $scope.filename = filename;
+                  if (submitProfPic) {
+                    $scope.postProfPic(username);
+                  }
+                  else {
+                    $scope.postPic(filename, username);
+                  }
+              });
+            }
+          }
+        };
+
+        $scope.geocoder = new google.maps.Geocoder();
+
+        // Post new pic for existing user
+        $scope.postPic = function(filename, username) {
+          var address = $("#location").val();
+          $scope.geocoder.geocode( {'address': address}, function(results, status) {
+            if (status == google.maps.GeocoderStatus.OK) {
+              var geolocation = results[0].geometry.location;
+              var new_pic_data = {
+                picture: "https://s3-us-west-2.amazonaws.com/picllery-user-images/" + filename,
+                location: geolocation,
+                address: address,
+                private: $("#private").prop("checked")
+              };
+              $http.post("/api/picture/" + username, new_pic_data)
+                .success(function(data) {
+                  console.log("Posted new pic for " + username);
+                  $scope.hideAllPgs();
+                  $(".profile").show();
+                  $scope.viewProfile(username);
+                })
+                .error(function(data) {
+                  console.log("Failed to post new pic... :( Error: " + error);
+                });
+            } else {
+              alert("Geocode was not successful for the following reason: " + status + ". Please try another address.");
+            }
+          });
+        };
+
+        // Post profile pic when creating new profile
+        $scope.postProfPic = function(username) {
+          $scope.editProfile('', username);
         };
       }]);
     </script>

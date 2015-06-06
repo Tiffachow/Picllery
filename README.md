@@ -1,9 +1,9 @@
 #Picllery
-A single page web app that allows you to:
-* upload and display photos
-* with locations
-* in a public or private gallery
-* on your user profile.
+A **single page**, mobile **responsive** web app that allows you to:
+* **upload** and **display** photos
+* with **geolocations** & **likes**
+* in a **public** or **private** gallery
+* on your **user profile**.
 
 ##To Run:
 1. Make sure you have Node and npm installed.
@@ -36,14 +36,12 @@ A single page web app that allows you to:
 * Picture Likes
 
 ###Todo
-* Google Maps API
-* Likes Routes
 * Hash Passwords
 * Caching
-* Angular
+* Crop Img Library
+* Are you sure? for deletes
 
-
-##Recently Done
+###Recently Done
 * added authentication, updated API, updated readme, added angular directives
 * added mobile nav, added more responsiveness to pgs
 * added API routes for delete profile, update profile, post new picture, update picture, delete  picture, updated angular ajax requests
@@ -51,3 +49,4 @@ A single page web app that allows you to:
 * styled profile pg, added map to profile, revised post profile route and success callback, added login/logout logic and route, fixed edit and delete profile routes, made header more responsive, edited db column constraints, fixed login route
 * changed home & profile styling, used angular file upload library with post upload to Amazon S3, wrote request to save pics to db, rewrote submit profile and edit profile requests and routes to accomodate library
 * fixed bugs with logout, fixed map markers and positioning
+* added likes functionality, update and delete picture requests and routes and angular logic, added view likes and pics functionality on homepg, cancel option on forms
