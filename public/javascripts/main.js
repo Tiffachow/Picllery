@@ -24,6 +24,4 @@ $(function() {
     $("aside").css("z-index","1");
   });
 
-  var height = $("#picture img").height();
-
 });

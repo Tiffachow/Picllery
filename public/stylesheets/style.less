@@ -316,8 +316,11 @@ aside {
 					background: fade(#fff, 50%);
 				}
 				#pop-likes {
-					padding-top: 40%;
+					margin-top: 40%;
+					padding-top: 0;
 					background: none;
+					z-index: 1;
+					height: 20px;
 				}
 			}
 		}
@@ -446,6 +449,7 @@ button {
 }
 
 .error {
+	width: 100%;
 	font-size: 15px;
 	text-align: center;
 	margin-top: -5px;
@@ -555,7 +559,6 @@ button {
 				overflow: hidden;
 				#gallery-legend, .no-pics {
 					position: absolute;
-					bottom: 0;
 				}
 				.no-pics {
 					text-align: center;
@@ -604,6 +607,7 @@ button {
 				}
 			}
 			#picture {
+				position: absolute;
 				background: @orange;
 				width: 100%;
 				height: 100%;
@@ -626,7 +630,7 @@ button {
 				#likes {
 					padding-top: 0;
 					margin-top: 77%;
-					height: 22%;
+					height: 90px;
 					background: fade(#fff, 80%);
 					button {
 						font-size: 20px;
@@ -650,6 +654,13 @@ button {
 				#delete-pic-button {
 					margin-top: 44px;
 				}
+				#toggle-hint {
+					padding-top: 0;
+					width: 100px;
+					margin-top: 78px;
+					height: 42px;
+					background: fade(#fff, 80%);
+				}
 			}
 			#map-canvas-user {
 				position: relative;
@@ -661,6 +672,23 @@ button {
 				}
 			}
 		}
+	}
+}
+// ========================== SURE? BOX =============================
+
+#sure {
+	position: fixed;
+	width: 50%;
+	height: auto;
+	background: #fff;
+	border: 10px solid @dark-purple;
+	top: 25%;
+	left: 25%;
+	z-index: 2;
+	text-align: center;
+	padding: 8% 0;
+	button {
+		margin: 2px 5px;
 	}
 }
 
@@ -785,11 +813,17 @@ button {
 					margin-top: 50%;
 				}
 			}
+			#gallery div h2 {
+				font-size: 20px;
+			}
 		}
 	}
 }
 
 @media all and (max-width: 731px) {
+	#sure button {
+		font-size: 14px;
+	}
 	#title {
 		font-size: 40px;
 		letter-spacing: 1px;

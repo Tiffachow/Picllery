@@ -5,6 +5,8 @@ A **single page**, mobile **responsive** web app that allows you to:
 * in a **public** or **private** gallery
 * on your **user profile**.
 
+[Demo @ picllery.heartso.me](http://picllery.heartso.me)
+
 ##To Run:
 1. Make sure you have Node and npm installed.
 2. Install, setup postgreSQL if you haven't already:
@@ -26,20 +28,19 @@ A **single page**, mobile **responsive** web app that allows you to:
 * Image Storage: [**Amazon S3**](http://aws.amazon.com/s3/)
 * MV\* JS Framework: [**AngularJS**](https://angularjs.org/)
 * File Upload: [**ng-file-upload**](https://github.com/danialfarid/ng-file-upload) library by Danial Farid
+* Password Hashing: [**bcrypt**](https://www.npmjs.com/package/bcrypt) library
 * Styles Preprocessor: [**LESS**](http://lesscss.org/)
 * Responsive Framework: [**Bootstrap**](http://getbootstrap.com/)
 
 ##Features
-* User Profiles
-* Private and Public Pics & Gallery Options
-* Picture Locations, Pin Map
+* CRUD User Profiles with Image Gallery
+* CRUD Pics with Private and Public Options
+* Picture Locations, Pin Maps
 * Picture Likes
 
 ###Todo
-* Hash Passwords
 * Caching
 * Crop Img Library
-* Are you sure? for deletes
 
 ###Recently Done
 * added authentication, updated API, updated readme, added angular directives
@@ -50,3 +51,4 @@ A **single page**, mobile **responsive** web app that allows you to:
 * changed home & profile styling, used angular file upload library with post upload to Amazon S3, wrote request to save pics to db, rewrote submit profile and edit profile requests and routes to accomodate library
 * fixed bugs with logout, fixed map markers and positioning
 * added likes functionality, update and delete picture requests and routes and angular logic, added view likes and pics functionality on homepg, cancel option on forms
+* updated cancel functions for different forms, added sure? prompt before deletes, added preview and prof pic placeholder imgs, added pic option toggling for better viewing, hashed passwords with bcrypt library, simplified login and create profile routes and responses
