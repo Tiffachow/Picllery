@@ -12,6 +12,7 @@
     <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.3.15/angular.min.js"></script>
     <script src="https://maps.googleapis.com/maps/api/js?v=3.exp&signed_in=true"></script>
     <script src="/javascripts/ng-file-upload-all.min.js"></script>
+    <script src="/javascripts/ui-bootstrap-tpls-0.13.0.min.js"></script>
     <script src="/javascripts/main.js"></script>
   </head>
   <body>
@@ -106,7 +107,7 @@
               </div>
               <div class="prof-options" ng-if="logged_in.username == profile.username">
                 <p id="edit" ng-click="renderEditProfile()">Edit</p>
-                <p id="delete" ng-click="deleteProfile(logged_in.username)">Delete</p>
+                <p id="delete" ng-click="delete.prof.clicked = true">Delete</p>
               </div>
             </div>
             <div class="gallery col-xs-12 col-sm-12 col-md-12 col-lg-12 row no-padding">
@@ -136,11 +137,12 @@
                   <div>Click an image in the gallery.</div>
                   <img ng-click="togglePicOptions()"> <!-- PICTURE -->
                   <div id="edit-pic-button" ng-if="current_pic.user == logged_in.username && logged_in.username !== null" ng-click="renderEditPic()">Edit</div>
-                  <div id="delete-pic-button" ng-if="current_pic.user == logged_in.username && logged_in.username !== null" ng-click="delete.clicked = true">Delete</div>
+                  <div id="delete-pic-button" ng-if="current_pic.user == logged_in.username && logged_in.username !== null" ng-click="delete.pic.clicked = true">Delete</div>
                   <div id="likes">
                     <span id="count"></span> Likes. <button ng-click="addLikes(current_pic.id, current_pic.likes, current_pic.user)">Click here to like.</button>
                   </div>
                   <div id="toggle-hint"><p>Click Pic to Toggle</p></div>
+                  <div id="expand" ng-click="expandPic(current_pic.picture)"><p>Expand</p></div>
                 </div>
               </div>
               <div class="col-xs-12 col-sm-12 col-md-4 col-lg-4 no-padding">
@@ -149,6 +151,10 @@
                 </div>
               </div>
             </div>
+          </div>
+          <div ng-if="src" class="col-xs-12 col-sm-12 col-md-12 col-lg-12 expand-container no-padding">
+            <img id="expanded-pic" src="{{ src }}">
+            <span id="close-expand" ng-click="closeExpand()"><p>Close</p></span>
           </div>
           <nav class="profile-mobile">
             <a href="#gallery">Gallery</a>
@@ -186,10 +192,10 @@
                 <label for="password">Password:</label><input class="form-control" id="new-password" name="password" type="password" placeholder="Enter New Password" required><br>
                 <span class="error" id="pass-mismatch">Passwords do not match, please try again!<br></span>
                 <label for="re-password">Password, Again:</label><input class="form-control" id="re-password" name="re-password" type="password" placeholder="Re-enter Password" required><br>
-                <div class="form-inline">
-                  <label for="first-name">First Name:</label><input class="form-control" value="{{ profile.first_name }}" id="first-name" name="first-name" type="text" autocomplete required>
-                  <label for="last-name">Last Name:</label><input class="form-control" value="{{ profile.last_name }}" id="last-name" name="last-name" type="text" autocomplete required>
-                </div>
+                <div class="row">
+                  <div class="col-lg-6 no-padding"><label for="first-name">First Name:</label><input class="form-control" value="{{ profile.first_name }}" id="first-name" name="first-name" type="text" autocomplete required></div>
+                  <div class="col-lg-6 no-padding"><label for="last-name">Last Name:</label><input class="form-control" value="{{ profile.last_name }}" id="last-name" name="last-name" type="text" autocomplete required></div>
+                </div><br>
                 <span class="error" id="email-taken">Email is already registered, please try again! Emails are case-insensitive.<br></span>
                 <label for="email">Email:</label><input class="form-control" value="{{ profile.email }}" id="email" name="email" type="email" placeholder="e.g. hello_there@gmail.com" autocomplete required><br>
                 <label for="prof-pic">Profile Picture:</label>
@@ -216,19 +222,19 @@
                 <div ng-if="isUpload.upload">
                   <label for="picture">Picture:</label>
                   <span><p>Min size: 10KB, Max Size: 5MB. Keep file name short, please.</p></span>
-                  <input class="form-control" ng-model="file.picFile" required id="file" name="file" type="file" ngf-select ngf-capture="'camera'" accept="'image/*'" ngf-min-size='10000' ngf-max-size='5000000'><br>
+                  <input class="form-control" ng-model="file.picFile" required name="file" type="file" ngf-select ngf-capture="'camera'" accept="'image/*'" ngf-min-size='10000' ngf-max-size='5000000'><br>
                   <span class="preview-legend">Preview:</span><br>
                   <img ngf-src="file.picFile[0]" ngf-default-src="/images/preview.png" ngf-accept="'image/*'" ngf-min-size='10000' ngf-max-size='5000000' class="preview"><br><br>
                 </div>
                 <label for="location">Location (address):</label>
                 <input ng-if="isUpload.upload" class="form-control" id="location" name="location" type="text" required>
                 <input ng-if="!isUpload.upload" class="form-control" id="location" name="location" type="text" value="{{ reverse_geocode_location }}" required><br>
-                <div class="form-inline">
-                  <label for="private">Private?
-                    <input ng-if="isUpload.upload" class="form-control" id="private" name="private" type="checkbox">
-                    <input ng-if="!isUpload.upload" class="form-control" id="private" name="private" value="{{ current_pic.private }}" type="checkbox">
-                  </label><br>
-                </div>
+                <button type="button" ng-if="isUpload.upload" class="btn btn-primary" ng-model="checkbox.private" btn-checkbox btn-checkbox-true="'t'" btn-checkbox-false="'f'">
+                  Private: {{ checkbox.private }}
+                </button>
+                <button type="button" ng-if="!isUpload.upload" class="btn btn-primary" ng-model="checkbox.private" btn-checkbox btn-checkbox-true="'t'" btn-checkbox-false="'f'" value="{{ current_pic.private }}">
+                  Private: {{ checkbox.private }}
+                </button><br>
                 <button ng-if="isUpload.upload" type="submit" value="encode" ng-click="uploadPic(file.picFile,logged_in.username)">Submit</button>
                 <button ng-if="!isUpload.upload" type="submit" value="encode" ng-click="updatePic()">Submit</button>
                 <span ng-if="progress && isUpload.upload"><p>UPLOADING IN PROGRESS... {{ progress }}</p></span>
@@ -240,25 +246,31 @@
         </div>
       </div>
 
-      <div ng-if="delete.clicked" id="sure"><p>Are you sure you want to delete?</p><br><button ng-click="deletePic()">Yes</button><button ng-click="delete.clicked = false">No, Cancel.</button></div>
+      <div ng-if="delete.prof.clicked || delete.pic.clicked" id="sure"><p>Are you sure you want to delete?</p><br><button ng-if="delete.pic.clicked" ng-click="deletePic()">Yes</button><button ng-if="delete.prof.clicked" ng-click="deleteProfile(logged_in.username)">Yes</button><button ng-click="resetDelete()">No, Cancel.</button></div>
     </div>
 
     <div id="footer">
       <p><small>Copyright &#169; 2015 Picllery. All rights reserved.</small></p>
     </div>
     <script>
-      var piclleryApp = angular.module("piclleryApp", ['ngFileUpload'])
+      var piclleryApp = angular.module("piclleryApp", ['ngFileUpload','ui.bootstrap'])
       .controller("mainController", ['$scope', '$http', 'Upload', function($scope, $http, Upload) {
 
         $scope.logged_in = {username: null};
-        $scope.delete = {clicked: false};
+        $scope.resetDelete = function () {
+          $scope.delete = {
+            prof: {clicked: false},
+            pic: {clicked: false}
+          };
+        };
+        $scope.resetDelete();
 
         $scope.hideAllPgs = function() {
           // A reset, of sorts
           $(".page").hide();
           $("#picture img").hide();
           $(".error").hide();
-          $("#likes, #edit-pic-button, #delete-pic-button, #toggle-hint").css("display","none");
+          $("#likes, #edit-pic-button, #delete-pic-button, #toggle-hint, #expand").css("display","none");
           $("#new-username, #email").prop("disabled", false);
           $scope.thumb_clicked = false;
           $scope.delete.clicked = false;
@@ -327,8 +339,8 @@
             .success(function(data) {
               if (!data.invalid_username) {
                 if (!data.invalid_password) {
-                  $scope.viewProfile(data.user);
-                  $scope.getPics(data.user);
+                  $scope.viewProfile(data.logged_in_as);
+                  $scope.getPics(data.logged_in_as);
                   $scope.logged_in.username = data.logged_in_as;
                   $scope.selected_username = data.logged_in_as;
                   console.log("Logged in as " + $scope.logged_in.username);
@@ -427,12 +439,13 @@
                 }
                 else {
                   if (picFile) {
-                    $scope.uploadPic(picFile, data.user, 'true');
+                    $scope.uploadPic(picFile, data.logged_in_as, true);
                   }
-                  $scope.viewProfile(data.user);
+                  else {
+                    $scope.viewProfile(data.logged_in_as);
+                  }
                   $scope.logged_in.username = data.logged_in_as;
-                  console.log("Registered and created new profile for " + data.user);
-                  $scope.getPics(data.user);
+                  console.log("Registered and created new profile for " + data.logged_in_as);
                 }
               })
               .error(function(err) {
@@ -463,7 +476,7 @@
           $scope.selected_username = username;
           $http.get('/api/profile/' + $scope.selected_username)
             .success(function(data) {
-              if (data.prof_pic == null) {
+              if (data.prof_pic == null || data.prof_pic == '') {
                 data.prof_pic = '/images/picllery.png';
                 $("#profile-pic").css("background","#fff");
               }
@@ -522,7 +535,7 @@
         };
 
         $scope.togglePicOptions = function() {
-          var options = $("#edit-pic-button, #delete-pic-button, #likes, #toggle-hint");
+          var options = $("#edit-pic-button, #delete-pic-button, #likes, #toggle-hint, #expand");
           if (options.css("display") == "none") {
             options.css("display","inline-block");
           } else {
@@ -530,14 +543,29 @@
           }
         };
 
+        $scope.expandPic = function(src) {
+          $scope.src = src;
+          $scope.expandedPic = $("#expanded-pic");
+          $scope.expandedContainer = $(".expand-container");
+          if ($scope.expandedPic.css("width") < $scope.expandedContainer.css("width")) {
+            var left = ($scope.expandedContainer.css("width") - $scope.expandedPic.css("width")) / 2;
+            $scope.expandedPic.css("left", left);
+          }
+        };
+
+        $scope.closeExpand = function() {
+          $scope.src = null;
+        };
+
         $scope.displayPic = function(picture, location, address, priv, likes, id, username) {
           $("#picture img").show().attr("src", picture);
-          $("#likes, #edit-pic-button, #delete-pic-button, #toggle-hint").css("display","inline-block");
+          $("#likes, #edit-pic-button, #delete-pic-button, #toggle-hint, #expand").css("display","inline-block");
           $("#count").html(likes);
           $scope.current_pic = {
             id: id,
             likes: likes,
-            user: username
+            user: username,
+            picture: picture
           };
           if (priv = 't') {
             priv = true;
@@ -582,6 +610,7 @@
           $(".page").hide();
           $(".update-pic").show();
           $scope.isUpload = {upload: false};
+          $scope.checkbox = {private: 'f'};
         };
 
         $scope.updatePic = function() {
@@ -592,16 +621,17 @@
               var new_pic_data = {
                 location: geolocation,
                 address: address,
-                private: $("#private").prop("checked"),
+                private: $scope.checkbox.private,
                 username: $scope.current_pic.user
               };
+              console.log($scope.checkbox.private);
               $http.put("/api/picture/" + $scope.current_pic.id, new_pic_data)
                 .success(function(data) {
                   if (data.not_logged_in || data.not_correct_user) {
                     console.log("Not logged in or authorised to edit picture.");
                   }
                   else {
-                    console.log("Details updated for picture: " + $scope.filename);
+                    console.log("Details updated for picture: " + $scope.current_pic.picture);
                     $scope.hideAllPgs();
                     $(".profile").show();
                     $scope.viewProfile(new_pic_data.username);
@@ -628,6 +658,7 @@
               $(".picture img").attr("src","");
               $(".profile").show();
               $scope.viewProfile($scope.current_pic.user);
+              $scope.resetDelete();
             }
           })
           .error(function(data) {
@@ -650,39 +681,60 @@
           var password2 = $("#re-password").val();
           if (password1 === password2) {
             $("#pass-mismatch").hide();
-            if (logged_in) {
-              $scope.uploadPic(picFile, username, 'false');
-            }
-            var new_data = { // Can't change username or email
-              password: $("#new-password").val(),
-              first_name: $("#first-name").val(),
-              last_name: $("#last-name").val(),
-              prof_pic: "https://s3-us-west-2.amazonaws.com/picllery-user-images/" + $scope.filename,
-              bio: $("#bio").val()
-            };
-            $http.put("/api/profile/" + username, new_data)
-              .success(function(data) {
-                if (data.not_logged_in) {
-                  console.log("Unauthorised to edit profile. Please log in.")
-                }
-                else if (data.err) {
-                  console.log(err);
+            if (logged_in) { // not creating new profile, upload pic happens here
+              if (picFile) { // if new pic submitted, upload it
+                $scope.uploadPic(picFile, username, false);
+              }
+              else { // if no new pic, no need for upload
+                var filename = $scope.profile.prof_pic.split("picllery-user-images/");
+                if (filename.length > 1) {
+                  $scope.filename = filename[1]; // so that profile pic stays same if no change
                 }
                 else {
-                  $(".preview").attr("src",""); //reset
-                  $scope.progress = null;
-                  $scope.viewProfile(data.user);
-                  console.log("Updated profile for " + data.username);
+                  $scope.filename = null;
                 }
-              })
-              .error(function(data) {
-                console.log("Error: " + err);
-              });
+                $scope.submitProfileEdit(username);
+              }
+            }
+            else { // if creating new profile, upload pic happens beforehand
+              $scope.submitProfileEdit(username);
+            }
           }
           else {
             $("#pass-mismatch").show();
             console.log("Failed to register; passwords do not match.");
           }
+        };
+
+        $scope.submitProfileEdit = function(username) {
+          var new_data = { // Can't change username or email
+            password: $("#new-password").val(),
+            first_name: $("#first-name").val(),
+            last_name: $("#last-name").val(),
+            prof_pic: "https://s3-us-west-2.amazonaws.com/picllery-user-images/" + $scope.filename,
+            bio: $("#bio").val()
+          };
+          if (!$scope.filename) {
+            new_data.prof_pic = "";
+          }
+          $http.put("/api/profile/" + username, new_data)
+            .success(function(data) {
+              if (data.not_logged_in) {
+                console.log("Unauthorised to edit profile. Please log in.")
+              }
+              else if (data.err) {
+                console.log(err);
+              }
+              else {
+                $(".preview").attr("src",""); //reset
+                $scope.progress = null;
+                $scope.viewProfile(username);
+                console.log("Updated profile for " + username);
+              }
+            })
+            .error(function(data) {
+              console.log("Error: " + err);
+            });
         };
 
         $scope.deleteProfile = function(username) {
@@ -695,6 +747,7 @@
                 console.log("Deleted profile for: " + username);
                 $scope.logged_in.username = data.logged_in_as;
                 $scope.renderHome();
+                $scope.resetDelete();
               }
             })
             .error(function(data) {
@@ -708,13 +761,14 @@
           $scope.isUpload = {upload: true};
           $scope.progress = null;
           $scope.file = {picFile: null};
+          $scope.checkbox = {private: 'f'};
         };
 
         $scope.file = {picFile: null};
         $scope.policy = "ewogICJleHBpcmF0aW9uIjogIjIwMjUtMDEtMDFUMDA6MDA6MDBaIiwKICAiY29uZGl0aW9ucyI6IFsKICAgIHsiYnVja2V0IjogInBpY2xsZXJ5LXVzZXItaW1hZ2VzIn0sCiAgICBbInN0YXJ0cy13aXRoIiwgIiRrZXkiLCAiIl0sCiAgICB7ImFjbCI6ICJwdWJsaWMtcmVhZCJ9LAogICAgWyJzdGFydHMtd2l0aCIsICIkQ29udGVudC1UeXBlIiwgIiJdLAogICAgWyJzdGFydHMtd2l0aCIsICIkZmlsZW5hbWUiLCAiIl0sCiAgICBbImNvbnRlbnQtbGVuZ3RoLXJhbmdlIiwgMCwgNTI0Mjg4MDAwXQogIF0KfQ==";
         $scope.signature = "G4CtuC9xOrWVumnNbMIUxkP5K0I=";
 
-        $scope.uploadPic = function (files, username, submitProfPic) {
+        $scope.uploadPic = function (files, username, submitFirstProfPic) {
           if (files && files.length) {
             for (var i = 0; i < files.length; i++) {
               var file = files[i];
@@ -743,9 +797,14 @@
               }).success(function (data, status, headers, config) {
                   console.log('file ' + config.file.name + ' uploaded. Response: ' + data);
                   $scope.filename = filename;
+                  $scope.progress = null;
                   $(".preview").attr("src",""); //reset
-                  if (submitProfPic) {
-                    $scope.postProfPic(username);
+                  if (submitFirstProfPic == true) { // aka when creating new profile
+                    $scope.editProfile('', username);
+                    $scope.viewProfile(username);
+                  }
+                  else if (submitFirstProfPic == false) { // aka when editing prof pic
+                    $scope.submitProfileEdit(username);
                   }
                   else {
                     $scope.postPic(filename, username);
@@ -774,7 +833,7 @@
                 picture: "https://s3-us-west-2.amazonaws.com/picllery-user-images/" + filename,
                 location: geolocation,
                 address: address,
-                private: $("#private").prop("checked")
+                private: $scope.checkbox.private
               };
               $http.post("/api/picture/" + username, new_pic_data)
                 .success(function(data) {
@@ -791,11 +850,6 @@
               alert("Geocode was not successful for the following reason: " + status + ". Please try another address.");
             }
           });
-        };
-
-        // Post profile pic when creating new profile
-        $scope.postProfPic = function(username) {
-          $scope.editProfile('', username);
         };
       }]);
     </script>

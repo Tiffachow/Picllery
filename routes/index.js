@@ -86,7 +86,7 @@ router.post('/api/login', function(req, res) {
           // Setting a property will automatically cause a Set-Cookie response to be sent
           // Start user session
           req.session.user = user;
-          return res.json({user: user.username, logged_in_as: req.session.user.username});
+          return res.json({logged_in_as: req.session.user.username});
         }
         else {
           client.end();
@@ -144,7 +144,7 @@ router.post('/api/register', function(req, res) {
                 var user = {username: data.username};
                 // Start user session
                 req.session.user = user;
-                return res.json({user: user.username, logged_in_as: req.session.user.username});
+                return res.json({logged_in_as: req.session.user.username});
               });
             }
             else {
@@ -225,7 +225,7 @@ router.put('/api/profile/:username', function(req, res) {
           client.end();
           var user = {username: username};
           req.session.user = user;
-          return res.json({user: user.username});
+          return res.end();
         });
       }
       else {
@@ -289,19 +289,19 @@ router.delete('/api/profile/:username', function(req, res) {
 
 /* POST new picture. */
 router.post('/api/picture/:username', function(req, res) {
-  var priv;
-  if (req.body["private"] == true) {
-    priv = "t";
-  }
-  else {
-    priv = "f";
-  }
+  // var priv;
+  // if (req.body["private"] == true) {
+  //   priv = "t";
+  // }
+  // else {
+  //   priv = "f";
+  // }
   var data = {
     username: req.params["username"],
     picture: req.body["picture"],
     location: req.body["location"],
     address: req.body["address"],
-    private: priv,
+    private: req.body["private"]
   };
   // Get a Postgres client from the connection pool
   pg.connect(conString, function(err, client, done) {
@@ -402,17 +402,17 @@ router.put('/api/picture/:id', function(req, res) {
       });
     }
     else { // Update picture location and/or privacy
-      var priv;
-      if (req.body["private"] == true) {
-        priv = "t";
-      }
-      else {
-        priv = "f";
-      }
+      // var priv;
+      // if (req.body["private"] == true) {
+      //   priv = "t";
+      // }
+      // else {
+      //   priv = "f";
+      // }
       var data = {
         location: req.body["location"],
         address: req.body["address"],
-        private: priv,
+        private: req.body["private"],
         username: req.body["username"]
       };
       // Check if user is logged in on right account
