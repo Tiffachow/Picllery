@@ -2,7 +2,7 @@ var express = require('express');
 var multer = require('multer');
 var pg = require('pg');
 var bcrypt = require('bcrypt');
-var conString = "postgres://localhost:5432/picllery";
+var conString = "postgres://postgres:password@localhost:5432/picllery";
 var router = express.Router();
 router.use(multer()); // for parsing multipart/form-data
 // ================================================================================
