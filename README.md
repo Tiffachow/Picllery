@@ -15,11 +15,20 @@ A **single page**, mobile **responsive** web app that allows you to:
     $ initdb /usr/local/var/postgres -E utf8
     $ ln -sfv /usr/local/opt/postgresql/*.plist ~/Library/LaunchAgents
 ```
+or if on ubuntu:
+```sh
+    $ sudo apt-get install postgresql postgresql-contrib
+```
+user: postgres, password: password
 3. Create database named "picllery": `$ createdb picllery`
-4. Clone the repo: `$ git clone git@github.com:Tiffachow/Picllery.git`
+4. Clone the repo:
+```
+    $ git clone git@github.com:Tiffachow/Picllery.git picllery
+    $ cd picllery
+```
 5. Install the app and setup tables: `$ npm install`
 6. Start the server: `$ npm start`
-7. View in your browser at `http://localhost:3000`
+7. View in your browser at `http://localhost:9000`
 
 ##Tech
 * API / Web Framework: **Node.js / [Express.js](http://expressjs.com/)**
