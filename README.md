@@ -52,3 +52,4 @@ A **single page**, mobile **responsive** web app that allows you to:
 * added likes functionality, update and delete picture requests and routes and angular logic, added view likes and pics functionality on homepg, cancel option on forms
 * updated cancel functions for different forms, added sure? prompt before deletes, added preview and prof pic placeholder imgs, added pic option toggling for better viewing, hashed passwords with bcrypt library, simplified login and create profile routes and responses
 * simplified edit profile route and response, cleaned up cancel functions, updated delete functions, added pic expansion option, replaced private input checkbox with angular bootstrap ui button-checkbox, fixed create & edit prof bugs when no prof pic inputted
+* moved module and controller code to main.js file
