@@ -3,7 +3,7 @@
   "version": "0.0.0",
   "private": true,
   "scripts": {
-    "install": "node models/database.js",
+    "setup": "node models/database.js",
     "start": "nodemon ./bin/www"
   },
   "dependencies": {

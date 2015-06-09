@@ -19,16 +19,25 @@ or if on ubuntu:
 ```sh
     $ sudo apt-get install postgresql postgresql-contrib
 ```
-create db user & password & put in environment variables 'dbuser' and 'password'
-3. Create database named "picllery": `$ createdb picllery`
+3. Create database named "picllery", db user and password:
+```sh
+    $ createdb picllery
+    $ createuser [user]
+    $ psql picllery
+    picllery=> alter user [user] password [password];
+    picllery=> grant all on all tables in schema public to [user];
+    picllery=> \q
+```
 4. Clone the repo:
 ```
     $ git clone git@github.com:Tiffachow/Picllery.git picllery
     $ cd picllery
 ```
-5. Install the app and setup tables: `$ npm install`
-6. Start the server: `$ npm start`
-7. View in your browser at `http://localhost:9000`
+5. Install the app: `$ npm install`
+6. Set environment variables in setup.env file, then `$ source setup.env`
+7. Setup tables: `$ npm run-script setup`
+8. Start the server: `$ npm start`
+9. View in your browser at `http://localhost:9000`
 
 ##Tech
 * API / Web Framework: **Node.js / [Express.js](http://expressjs.com/)**
