@@ -49,6 +49,7 @@ or if on ubuntu:
 * Password Hashing: [**bcrypt**](https://www.npmjs.com/package/bcrypt) library
 * Styles Preprocessor: [**LESS**](http://lesscss.org/)
 * Responsive Framework: [**Bootstrap**](http://getbootstrap.com/)
+* [**Google Maps API**](https://developers.google.com/maps/web/)
 
 ##Features
 * CRUD User Profiles with Image Gallery
