@@ -19,7 +19,7 @@ or if on ubuntu:
 ```sh
     $ sudo apt-get install postgresql postgresql-contrib
 ```
-user: postgres, password: password
+create db user & password & put in environment variables 'dbuser' and 'password'
 3. Create database named "picllery": `$ createdb picllery`
 4. Clone the repo:
 ```

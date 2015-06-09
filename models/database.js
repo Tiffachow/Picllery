@@ -1,6 +1,6 @@
 var pg = require('pg');
 // var conString = "postgres://username:password@localhost/database";
-var conString = "postgres://@localhost:5432/picllery";
+var conString = "postgres://"+process.env.dbuser+":"+process.env.password+"@localhost:5432/picllery";
 
 pg.connect(conString, function(err, client, done) {
 
